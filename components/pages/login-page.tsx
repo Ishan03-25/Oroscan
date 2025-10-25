@@ -1,54 +1,91 @@
 "use client"
 
 import type React from "react"
-
 import { useState } from "react"
-import { motion } from "framer-motion"
+import { motion, Variants, Transition } from "framer-motion"
 import { Input } from "@/components/ui/input"
-import { Lock, User, CheckCircle } from "lucide-react"
+import { Alert } from "@/components/ui/alert"
+import { Lock, User, CheckCircle, AlertCircle } from "lucide-react"
+import { signIn } from "next-auth/react"
+import { useRouter } from "next/navigation"
 
-interface LoginPageProps {
-  onLogin: (username: string) => void
+interface AuthError {
+  message: string
+  code: "InvalidEmail" | "InvalidUsername" | "InvalidPassword" | "MissingCredentials"
 }
 
-export default function LoginPage({ onLogin }: LoginPageProps) {
-  const [username, setUsername] = useState("")
+const containerVariants: Variants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.15,
+      delayChildren: 0.2,
+    },
+  },
+}
+
+const itemVariants: Variants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.6, ease: [0.43, 0.13, 0.23, 0.96] },
+  },
+}
+
+const loadingTransition: Transition = {
+  duration: 1,
+  repeat: Infinity,
+  ease: "linear",
+}
+
+export default function LoginPage() {
+  const router = useRouter()
+  const [identifier, setIdentifier] = useState("")
   const [password, setPassword] = useState("")
   const [isLoading, setIsLoading] = useState(false)
   const [showSuccess, setShowSuccess] = useState(false)
+  const [error, setError] = useState<AuthError | null>(null)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
+    setError(null)
 
-    await new Promise((resolve) => setTimeout(resolve, 800))
+    try {
+      const res = await signIn("credentials", {
+        redirect: false,
+        identifier,
+        password,
+      })
 
-    if (username && password) {
-      setShowSuccess(true)
-      await new Promise((resolve) => setTimeout(resolve, 600))
-      onLogin(username)
+      if (!res?.error) {
+        setShowSuccess(true)
+        setTimeout(() => {
+          router.push("/home")
+        }, 600)
+      } else {
+        // Try to parse the error message as JSON (our custom error format)
+        try {
+          const authError = JSON.parse(res.error) as AuthError
+          setError(authError)
+        } catch {
+          // If error isn't our custom format, show generic message
+          setError({
+            message: "An error occurred during login",
+            code: "MissingCredentials"
+          })
+        }
+      }
+    } catch (err) {
+      setError({
+        message: "An error occurred during login",
+        code: "MissingCredentials"
+      })
     }
+
     setIsLoading(false)
-  }
-
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.15,
-        delayChildren: 0.2,
-      },
-    },
-  }
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.6, ease: "easeOut" },
-    },
   }
 
   return (
@@ -105,14 +142,14 @@ export default function LoginPage({ onLogin }: LoginPageProps) {
             <motion.div variants={itemVariants} className="space-y-2">
               <label className="block text-sm font-semibold text-foreground flex items-center gap-2">
                 <User className="w-4 h-4 text-primary" />
-                Username
+                Email or Username
               </label>
               <motion.div whileFocus={{ scale: 1.02 }} className="relative">
                 <Input
                   type="text"
-                  placeholder="Enter your username"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
+                  placeholder="Enter your email or username"
+                  value={identifier}
+                  onChange={(e) => setIdentifier(e.target.value)}
                   className="w-full border-2 border-border focus:border-primary focus:ring-2 focus:ring-primary/20 rounded-xl px-4 py-3 transition-all duration-300 bg-input focus:bg-card dark:bg-input dark:focus:bg-card"
                 />
               </motion.div>
@@ -134,6 +171,16 @@ export default function LoginPage({ onLogin }: LoginPageProps) {
               </motion.div>
             </motion.div>
 
+            {error && (
+              <motion.div
+                variants={itemVariants}
+                className="p-4 rounded-xl bg-destructive/10 border border-destructive text-destructive text-sm flex items-center gap-2"
+              >
+                <AlertCircle className="w-4 h-4" />
+                {error.message}
+              </motion.div>
+            )}
+
             <motion.div variants={itemVariants}>
               <motion.button
                 type="submit"
@@ -149,7 +196,7 @@ export default function LoginPage({ onLogin }: LoginPageProps) {
                       transition={{ duration: 1, repeat: Number.POSITIVE_INFINITY }}
                       className="w-5 h-5 border-2 border-primary-foreground border-t-transparent rounded-full"
                     />
-                    Logging in...
+                    Signing in...
                   </>
                 ) : showSuccess ? (
                   <>
@@ -157,7 +204,7 @@ export default function LoginPage({ onLogin }: LoginPageProps) {
                     Success!
                   </>
                 ) : (
-                  "Login"
+                  "Sign in"
                 )}
               </motion.button>
             </motion.div>
