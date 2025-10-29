@@ -8,6 +8,7 @@ import QuestionCard from "@/components/question-card"
 import ImageSelector from "@/components/image-selector"
 import ProgressBar from "@/components/progress-bar"
 import { ArrowLeft, ArrowRight } from "lucide-react"
+import { useTranslation } from "@/hooks/use-translation"
 
 interface FeaturesPageProps {
   onNext: () => void
@@ -17,6 +18,8 @@ interface FeaturesPageProps {
 export default function FeaturesPage({ onNext, onBack }: FeaturesPageProps) {
   const [answers, setAnswers] = useState<Record<string, string>>({})
   const [selectedImage, setSelectedImage] = useState<string>("")
+  const { t } = useTranslation("features")
+  const { t: tc } = useTranslation("common")
 
   const handleAnswer = (id: string, value: string) => {
     setAnswers((prev) => ({ ...prev, [id]: value }))
@@ -39,10 +42,10 @@ export default function FeaturesPage({ onNext, onBack }: FeaturesPageProps) {
   }
 
   const mouthImages = [
-    { id: 1, label: "Condition 1", url: "/mouth-condition-1.jpg" },
-    { id: 2, label: "Condition 2", url: "/mouth-condition-2.jpg" },
-    { id: 3, label: "Condition 3", url: "/mouth-condition-3.jpg" },
-    { id: 4, label: "Condition 4", url: "/mouth-condition-4.jpg" },
+    { id: 1, label: t("patches"), url: "/mouth-condition-1.jpg" },
+    { id: 2, label: t("lumps"), url: "/mouth-condition-2.jpg" },
+    { id: 3, label: t("other"), url: "/mouth-condition-3.jpg" },
+    { id: 4, label: t("pain"), url: "/mouth-condition-4.jpg" },
   ]
 
   return (
@@ -51,7 +54,7 @@ export default function FeaturesPage({ onNext, onBack }: FeaturesPageProps) {
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
         <div className="flex items-center gap-3">
-          <span className="text-sm font-semibold text-muted-foreground">Step 4 of 5</span>
+          <span className="text-sm font-semibold text-muted-foreground">{`Step 4 of 5`}</span>
           <div className="flex-1">
             <ProgressBar current={4} total={5} />
           </div>
@@ -71,22 +74,22 @@ export default function FeaturesPage({ onNext, onBack }: FeaturesPageProps) {
           className="space-y-6"
         >
           <motion.h2 variants={itemVariants} className="text-2xl font-bold text-foreground dark:text-slate-100">
-            Features Inside Mouth
+            {t("title")}
           </motion.h2>
 
           {/* Question 1 */}
           <motion.div variants={itemVariants}>
             <QuestionCard
-              question="Abnormal Facial asymmetry (difference in shape/size on two sides of the face) ?"
-              onAnswer={(value) => handleAnswer("asymmetry", value)}
-              selected={answers["asymmetry"]}
+              question={t("swelling")}
+              onAnswer={(value) => handleAnswer("swelling", value)}
+              selected={answers["swelling"]}
             />
           </motion.div>
 
           {/* Question 2 */}
           <motion.div variants={itemVariants}>
             <QuestionCard
-              question="Red or white patches in the mouth (Choose the closest to what you see) ?"
+              question={t("patches")}
               onAnswer={(value) => handleAnswer("patches", value)}
               selected={answers["patches"]}
               showMoreInfo
@@ -99,16 +102,16 @@ export default function FeaturesPage({ onNext, onBack }: FeaturesPageProps) {
               images={mouthImages}
               selected={selectedImage}
               onSelect={setSelectedImage}
-              title="Lumps or thick spots in the mouth (Choose closest to which what you see)"
+              title={t("lumps")}
             />
           </motion.div>
 
           {/* Question 3 */}
           <motion.div variants={itemVariants}>
             <QuestionCard
-              question="Sore or Ulcer in the mouth ?"
-              onAnswer={(value) => handleAnswer("sore", value)}
-              selected={answers["sore"]}
+              question={t("bleeding")}
+              onAnswer={(value) => handleAnswer("bleeding", value)}
+              selected={answers["bleeding"]}
               showMoreInfo
             />
           </motion.div>
@@ -116,7 +119,7 @@ export default function FeaturesPage({ onNext, onBack }: FeaturesPageProps) {
           {/* Question 4 */}
           <motion.div variants={itemVariants}>
             <QuestionCard
-              question="Is there any unexplained, painless, persistent lumps in the neck that do not go away ?"
+              question={t("lumps")}
               onAnswer={(value) => handleAnswer("lumps", value)}
               selected={answers["lumps"]}
               showMoreInfo
@@ -126,7 +129,7 @@ export default function FeaturesPage({ onNext, onBack }: FeaturesPageProps) {
           {/* Question 5 */}
           <motion.div variants={itemVariants}>
             <QuestionCard
-              question="Is there any change in speech, such as a lisp ?"
+              question={t("speech")}
               onAnswer={(value) => handleAnswer("speech", value)}
               selected={answers["speech"]}
             />
@@ -135,7 +138,7 @@ export default function FeaturesPage({ onNext, onBack }: FeaturesPageProps) {
           {/* Question 6 */}
           <motion.div variants={itemVariants}>
             <QuestionCard
-              question="Is there any difficulty chewing or swallowing ?"
+              question={t("chewing")}
               onAnswer={(value) => handleAnswer("chewing", value)}
               selected={answers["chewing"]}
             />
@@ -144,7 +147,7 @@ export default function FeaturesPage({ onNext, onBack }: FeaturesPageProps) {
           {/* Question 7 */}
           <motion.div variants={itemVariants}>
             <QuestionCard
-              question="Is there any unexplained oral/facial pain or a perpetual sore throat ?"
+              question={t("pain")}
               onAnswer={(value) => handleAnswer("pain", value)}
               selected={answers["pain"]}
             />
@@ -161,7 +164,7 @@ export default function FeaturesPage({ onNext, onBack }: FeaturesPageProps) {
                 variant="outline"
                 className="border-2 border-amber-500 text-amber-600 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-950 font-semibold px-8 py-3 rounded-lg flex items-center gap-2 bg-transparent transition-colors duration-300"
               >
-                <ArrowLeft className="w-4 h-4" /> Back
+                <ArrowLeft className="w-4 h-4" /> {tc("back")}
               </Button>
             </motion.div>
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
@@ -169,7 +172,7 @@ export default function FeaturesPage({ onNext, onBack }: FeaturesPageProps) {
                 onClick={onNext}
                 className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold px-8 py-3 rounded-lg flex items-center gap-2 transition-all duration-300"
               >
-                Next <ArrowRight className="w-4 h-4" />
+                {tc("next")} <ArrowRight className="w-4 h-4" />
               </Button>
             </motion.div>
           </motion.div>

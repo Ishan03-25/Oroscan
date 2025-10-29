@@ -29,6 +29,14 @@ export const en = {
     medications: "Current Medications",
     allergies: "Allergies",
     lastCheckup: "Last Medical Checkup",
+    historyOfHabits: "History of Habits",
+    q_alcohol: "Alcohol intake?",
+    q_tobacco: "Tobacco products (Cigarette / bidi / khaini / hookah)?",
+    q_gutka: "Gutka (Areca Nut)?",
+    q_paan: "Paan with slaked lime, zarda and betel nut?",
+    q_precipitation: "Precipitation effect in the mouth due to tobacco or betel leaf?",
+    q_hiv: "Have you ever been tested for HIV?",
+    q_hpv: "Have you ever been tested for HPV?",
   },
   family: {
     title: "Family History",
@@ -47,6 +55,8 @@ export const en = {
     bleeding: "Bleeding",
     lumps: "Lumps or Thickening",
     other: "Other Symptoms",
+    speech: "Change in speech (e.g. lisp)",
+    chewing: "Difficulty chewing or swallowing",
   },
   device: {
     title: "Device Connection",

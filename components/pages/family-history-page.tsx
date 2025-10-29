@@ -7,6 +7,7 @@ import TabNavigation from "@/components/tab-navigation"
 import QuestionCard from "@/components/question-card"
 import ProgressBar from "@/components/progress-bar"
 import { ArrowLeft, ArrowRight, HelpCircle } from "lucide-react"
+import { useTranslation } from "@/hooks/use-translation"
 
 interface FamilyHistoryPageProps {
   onNext: () => void
@@ -15,6 +16,8 @@ interface FamilyHistoryPageProps {
 
 export default function FamilyHistoryPage({ onNext, onBack }: FamilyHistoryPageProps) {
   const [answer, setAnswer] = useState<string>("")
+  const { t } = useTranslation("family")
+  const { t: tc } = useTranslation("common")
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -38,7 +41,7 @@ export default function FamilyHistoryPage({ onNext, onBack }: FamilyHistoryPageP
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
         <div className="flex items-center gap-3">
-          <span className="text-sm font-semibold text-muted-foreground">Step 3 of 5</span>
+          <span className="text-sm font-semibold text-muted-foreground">{`Step 3 of 5`}</span>
           <div className="flex-1">
             <ProgressBar current={3} total={5} />
           </div>
@@ -58,7 +61,7 @@ export default function FamilyHistoryPage({ onNext, onBack }: FamilyHistoryPageP
           className="bg-card dark:bg-slate-800 rounded-2xl shadow-lg p-8 space-y-8 border border-border dark:border-slate-700 transition-colors duration-300"
         >
           <motion.h2 variants={itemVariants} className="text-2xl font-bold text-foreground dark:text-slate-100">
-            Family History
+            {t("title")}
           </motion.h2>
 
           <motion.div
@@ -69,10 +72,11 @@ export default function FamilyHistoryPage({ onNext, onBack }: FamilyHistoryPageP
               <HelpCircle className="w-5 h-5 text-red-600 dark:text-red-400 mt-0.5 flex-shrink-0" />
               <div>
                 <p className="font-semibold text-red-900 dark:text-red-200">
-                  Family history of Head, neck, throat or oral cancer in blood relatives ?
+                  {t("subtitle")}
                 </p>
                 <p className="text-sm text-red-700 dark:text-red-300 mt-1">
-                  Please indicate if any of your blood relatives have had cancer of the head, neck, throat, or mouth.
+                  {/* keep additional guidance minimal; reuse subtitle for now */}
+                  {t("subtitle")}
                 </p>
               </div>
             </div>
@@ -80,7 +84,7 @@ export default function FamilyHistoryPage({ onNext, onBack }: FamilyHistoryPageP
 
           <motion.div variants={itemVariants}>
             <QuestionCard
-              question="Family history of Head, neck, throat or oral cancer in blood relatives ?"
+              question={t("subtitle")}
               onAnswer={setAnswer}
               selected={answer}
               showMoreInfo
@@ -98,7 +102,7 @@ export default function FamilyHistoryPage({ onNext, onBack }: FamilyHistoryPageP
                 variant="outline"
                 className="border-2 border-amber-500 text-amber-600 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-950 font-semibold px-8 py-3 rounded-lg flex items-center gap-2 bg-transparent transition-colors duration-300"
               >
-                <ArrowLeft className="w-4 h-4" /> Back
+                <ArrowLeft className="w-4 h-4" /> {tc("back")}
               </Button>
             </motion.div>
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
@@ -106,7 +110,7 @@ export default function FamilyHistoryPage({ onNext, onBack }: FamilyHistoryPageP
                 onClick={onNext}
                 className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold px-8 py-3 rounded-lg flex items-center gap-2 transition-all duration-300"
               >
-                Next <ArrowRight className="w-4 h-4" />
+                {tc("next")} <ArrowRight className="w-4 h-4" />
               </Button>
             </motion.div>
           </motion.div>
