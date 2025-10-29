@@ -2,6 +2,7 @@
 
 import { useState, useCallback } from "react"
 import { useRouter } from "next/navigation"
+import { useLanguage } from "@/components/language-provider"
 import AppShell from "@/components/app-shell"
 import ProfilePage from "@/components/pages/profile-page"
 import MedicalHistoryPage from "@/components/pages/medical-history-page"
@@ -78,8 +79,18 @@ export default function HomeFlow({ username }: HomeFlowProps) {
     }
   }
 
+  const { setLanguage } = useLanguage()
+  
+  const handleLanguageChange = useCallback((lang: string) => {
+    setLanguage(lang as "en" | "hi" | "bn")
+  }, [setLanguage])
+
   return (
-    <AppShell username={username} onLogout={handleLogout}>
+    <AppShell 
+      username={username} 
+      onLogout={handleLogout}
+      onLanguageChange={handleLanguageChange}
+    >
       <div className="container mx-auto py-6 max-w-5xl min-h-[calc(100vh-4rem)]">
         {getCurrentPage()}
       </div>

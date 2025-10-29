@@ -9,10 +9,12 @@ export default function AppShell({
   children,
   username,
   onLogout,
+  onLanguageChange,
 }: {
   children: React.ReactNode
   username: string
   onLogout: () => void
+  onLanguageChange?: (lang: string) => void
 }) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
 
@@ -22,6 +24,7 @@ export default function AppShell({
         username={username}
         onLogout={onLogout}
         onToggleSidebar={() => setSidebarOpen((o) => !o)}
+        onLanguageChange={onLanguageChange}
       />
       <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
       <main

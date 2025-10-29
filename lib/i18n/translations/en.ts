@@ -1,0 +1,58 @@
+// English translations
+export const en = {
+  common: {
+    save: "Save",
+    next: "Next",
+    back: "Back",
+    submit: "Submit",
+    cancel: "Cancel",
+  },
+  profile: {
+    title: "Profile Information",
+    subtitle: "Please fill in your details to proceed with the screening",
+    name: "Full Name",
+    age: "Age",
+    gender: "Gender",
+    genderOptions: {
+      male: "Male",
+      female: "Female",
+      other: "Other",
+    },
+    phone: "Phone Number",
+    healthAssistant: "Health Assistant",
+    address: "Address",
+  },
+  medical: {
+    title: "Medical History",
+    subtitle: "Please provide your medical history information",
+    conditions: "Existing Medical Conditions",
+    medications: "Current Medications",
+    allergies: "Allergies",
+    lastCheckup: "Last Medical Checkup",
+  },
+  family: {
+    title: "Family History",
+    subtitle: "Please provide your family medical history",
+    relatives: "Any relatives with cancer?",
+    relationshipLabel: "Relationship",
+    cancerType: "Type of Cancer",
+    ageAtDiagnosis: "Age at Diagnosis",
+  },
+  features: {
+    title: "Symptoms & Features",
+    subtitle: "Please select all that apply",
+    pain: "Pain or Soreness",
+    swelling: "Swelling",
+    patches: "White/Red Patches",
+    bleeding: "Bleeding",
+    lumps: "Lumps or Thickening",
+    other: "Other Symptoms",
+  },
+  device: {
+    title: "Device Connection",
+    status: "Connection Status",
+    instructions: "Follow the instructions to connect your device",
+    start: "Start Scan",
+    retry: "Retry Connection",
+  },
+}

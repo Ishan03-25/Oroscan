@@ -1,0 +1,58 @@
+// Bengali translations
+export const bn = {
+  common: {
+    save: "সংরক্ষণ করুন",
+    next: "পরবর্তী",
+    back: "পিছনে",
+    submit: "জমা দিন",
+    cancel: "বাতিল করুন",
+  },
+  profile: {
+    title: "প্রোফাইল তথ্য",
+    subtitle: "স্ক্রিনিংয়ে এগিয়ে যাওয়ার জন্য আপনার তথ্য পূরণ করুন",
+    name: "পূর্ণ নাম",
+    age: "বয়স",
+    gender: "লিঙ্গ",
+    genderOptions: {
+      male: "পুরুষ",
+      female: "মহিলা",
+      other: "অন্যান্য",
+    },
+    phone: "ফোন নম্বর",
+    healthAssistant: "স্বাস্থ্য সহকারী",
+    address: "ঠিকানা",
+  },
+  medical: {
+    title: "চিকিৎসার ইতিহাস",
+    subtitle: "আপনার চিকিৎসার ইতিহাস প্রদান করুন",
+    conditions: "বিদ্যমান চিকিৎসা অবস্থা",
+    medications: "বর্তমান ওষুধপত্র",
+    allergies: "অ্যালার্জি",
+    lastCheckup: "শেষ চিকিৎসা পরীক্ষা",
+  },
+  family: {
+    title: "পারিবারিক ইতিহাস",
+    subtitle: "আপনার পারিবারিক চিকিৎসার ইতিহাস প্রদান করুন",
+    relatives: "পরিবারে কারো ক্যান্সার আছে?",
+    relationshipLabel: "সম্পর্ক",
+    cancerType: "ক্যান্সারের ধরন",
+    ageAtDiagnosis: "রোগ নির্ণয়ের সময় বয়স",
+  },
+  features: {
+    title: "লক্ষণ ও বৈশিষ্ট্য",
+    subtitle: "প্রযোজ্য সবগুলি নির্বাচন করুন",
+    pain: "ব্যথা বা বেদনা",
+    swelling: "ফোলা",
+    patches: "সাদা/লাল প্যাচ",
+    bleeding: "রক্তপাত",
+    lumps: "পিণ্ড বা মোটা হওয়া",
+    other: "অন্যান্য লক্ষণ",
+  },
+  device: {
+    title: "ডিভাইস সংযোগ",
+    status: "সংযোগের অবস্থা",
+    instructions: "আপনার ডিভাইস সংযোগ করতে নির্দেশাবলী অনুসরণ করুন",
+    start: "স্ক্যান শুরু করুন",
+    retry: "পুনরায় চেষ্টা করুন",
+  },
+}

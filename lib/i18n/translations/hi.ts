@@ -1,0 +1,58 @@
+// Hindi translations
+export const hi = {
+  common: {
+    save: "सहेजें",
+    next: "अगला",
+    back: "वापस",
+    submit: "जमा करें",
+    cancel: "रद्द करें",
+  },
+  profile: {
+    title: "प्रोफाइल जानकारी",
+    subtitle: "कृपया आगे बढ़ने के लिए अपनी जानकारी भरें",
+    name: "पूरा नाम",
+    age: "उम्र",
+    gender: "लिंग",
+    genderOptions: {
+      male: "पुरुष",
+      female: "महिला",
+      other: "अन्य",
+    },
+    phone: "फोन नंबर",
+    healthAssistant: "स्वास्थ्य सहायक",
+    address: "पता",
+  },
+  medical: {
+    title: "चिकित्सा इतिहास",
+    subtitle: "कृपया अपना चिकित्सा इतिहास प्रदान करें",
+    conditions: "मौजूदा चिकित्सा स्थितियां",
+    medications: "वर्तमान दवाएं",
+    allergies: "एलर्जी",
+    lastCheckup: "अंतिम चिकित्सा जांच",
+  },
+  family: {
+    title: "पारिवारिक इतिहास",
+    subtitle: "कृपया अपना पारिवारिक चिकित्सा इतिहास प्रदान करें",
+    relatives: "क्या परिवार में किसी को कैंसर है?",
+    relationshipLabel: "रिश्ता",
+    cancerType: "कैंसर का प्रकार",
+    ageAtDiagnosis: "निदान के समय उम्र",
+  },
+  features: {
+    title: "लक्षण और विशेषताएं",
+    subtitle: "कृपया लागू होने वाले सभी का चयन करें",
+    pain: "दर्द या पीड़ा",
+    swelling: "सूजन",
+    patches: "सफेद/लाल धब्बे",
+    bleeding: "रक्तस्राव",
+    lumps: "गांठें या मोटापन",
+    other: "अन्य लक्षण",
+  },
+  device: {
+    title: "उपकरण कनेक्शन",
+    status: "कनेक्शन स्थिति",
+    instructions: "अपना उपकरण कनेक्ट करने के लिए निर्देशों का पालन करें",
+    start: "स्कैन शुरू करें",
+    retry: "पुनः प्रयास करें",
+  },
+}
