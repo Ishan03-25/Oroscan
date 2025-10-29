@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { motion } from "framer-motion"
+import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import TabNavigation from "@/components/tab-navigation"
 import QuestionCard from "@/components/question-card"
@@ -17,7 +18,6 @@ interface FeaturesPageProps {
 
 export default function FeaturesPage({ onNext, onBack }: FeaturesPageProps) {
   const [answers, setAnswers] = useState<Record<string, string>>({})
-  const [selectedImage, setSelectedImage] = useState<string>("")
   const { t } = useTranslation("features")
   const { t: tc } = useTranslation("common")
 
@@ -41,12 +41,22 @@ export default function FeaturesPage({ onNext, onBack }: FeaturesPageProps) {
     visible: { opacity: 1, x: 0, transition: { duration: 0.4 } },
   }
 
-  const mouthImages = [
-    { id: 1, label: t("patches"), url: "/mouth-condition-1.jpg" },
-    { id: 2, label: t("lumps"), url: "/mouth-condition-2.jpg" },
-    { id: 3, label: t("other"), url: "/mouth-condition-3.jpg" },
-    { id: 4, label: t("pain"), url: "/mouth-condition-4.jpg" },
-  ]
+  // Images for the different image-selection questions
+  const asymmetryImages = [{ id: 1, label: t("swelling"), url: "/mouth/assymetry.png" }]
+
+  const patchesImages = Array.from({ length: 13 }).map((_, i) => ({
+    id: i + 1,
+    label: `${t("patches")} ${i + 1}`,
+    url: `/mouth/patch-${i + 1}.png`,
+  }))
+
+  const lumpsImages = Array.from({ length: 4 }).map((_, i) => ({
+    id: i + 1,
+    label: `${t("lumps_mouth")} ${i + 1}`,
+    url: `/mouth/lumps-${i + 1}.png`,
+  }))
+
+  const trismusImage = { id: 1, label: t("trismus"), url: "/mouth/trismus.png" }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted dark:from-slate-950 dark:via-slate-900 dark:to-slate-800 transition-colors duration-300">
@@ -77,80 +87,282 @@ export default function FeaturesPage({ onNext, onBack }: FeaturesPageProps) {
             {t("title")}
           </motion.h2>
 
-          {/* Question 1 */}
+          {/* Question 1 - Asymmetry (one image) */}
           <motion.div variants={itemVariants}>
-            <QuestionCard
-              question={t("swelling")}
-              onAnswer={(value) => handleAnswer("swelling", value)}
-              selected={answers["swelling"]}
-            />
-          </motion.div>
-
-          {/* Question 2 */}
-          <motion.div variants={itemVariants}>
-            <QuestionCard
-              question={t("patches")}
-              onAnswer={(value) => handleAnswer("patches", value)}
-              selected={answers["patches"]}
-              showMoreInfo
-            />
-          </motion.div>
-
-          {/* Image Selector */}
-          <motion.div variants={itemVariants}>
+            <p className="text-lg font-semibold text-red-600 mb-4">{t("swelling")}</p>
             <ImageSelector
-              images={mouthImages}
-              selected={selectedImage}
-              onSelect={setSelectedImage}
-              title={t("lumps")}
+              images={asymmetryImages}
+              selected={answers["asymmetry"] || ""}
+              onSelect={(id) => handleAnswer("asymmetry", id)}
             />
           </motion.div>
 
-          {/* Question 3 */}
+          {/* Question 2 - Red/White patches (13 images) */}
           <motion.div variants={itemVariants}>
-            <QuestionCard
-              question={t("bleeding")}
-              onAnswer={(value) => handleAnswer("bleeding", value)}
-              selected={answers["bleeding"]}
-              showMoreInfo
+            <p className="text-lg font-semibold text-red-600 mb-4">{t("patches")}</p>
+            <ImageSelector
+              images={patchesImages}
+              selected={answers["patches_image"] || ""}
+              onSelect={(id) => handleAnswer("patches_image", id)}
             />
           </motion.div>
 
-          {/* Question 4 */}
+          {/* Question 3 - Sore/Ulcer (yes/no) */}
           <motion.div variants={itemVariants}>
-            <QuestionCard
-              question={t("lumps")}
-              onAnswer={(value) => handleAnswer("lumps", value)}
-              selected={answers["lumps"]}
-              showMoreInfo
+            <p className="text-lg font-semibold text-red-600 mb-4">{t("bleeding")}</p>
+            <div className="bg-card dark:bg-slate-800 rounded-xl p-6 border border-border dark:border-slate-700">
+              <div className="flex gap-3">
+                <div>
+                  <Button
+                    onClick={() => handleAnswer("sore", "yes")}
+                    variant={answers["sore"] === "yes" ? "default" : "outline"}
+                    className={`rounded-full px-6 font-semibold transition-all duration-300 ${
+                      answers["sore"] === "yes"
+                        ? "bg-gradient-to-r from-teal-500 to-teal-600 text-white border-0 dark:from-teal-600 dark:to-teal-700"
+                        : "border-2 border-teal-500 text-teal-600 dark:text-teal-400 dark:border-teal-600 hover:bg-teal-50 dark:hover:bg-teal-950"
+                    }`}
+                  >
+                    Yes
+                  </Button>
+                </div>
+                <div>
+                  <Button
+                    onClick={() => handleAnswer("sore", "no")}
+                    variant={answers["sore"] === "no" ? "default" : "outline"}
+                    className={`rounded-full px-6 font-semibold transition-all duration-300 ${
+                      answers["sore"] === "no"
+                        ? "bg-gradient-to-r from-teal-500 to-teal-600 text-white border-0 dark:from-teal-600 dark:to-teal-700"
+                        : "border-2 border-teal-500 text-teal-600 dark:text-teal-400 dark:border-teal-600 hover:bg-teal-50 dark:hover:bg-teal-950"
+                    }`}
+                  >
+                    No
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Question 4 - Neck lumps (yes/no) */}
+          <motion.div variants={itemVariants}>
+            <p className="text-lg font-semibold text-red-600 mb-4">{t("lumps")}</p>
+            <div className="bg-card dark:bg-slate-800 rounded-xl p-6 border border-border dark:border-slate-700">
+              <div className="flex gap-3">
+                <div>
+                  <Button
+                    onClick={() => handleAnswer("neck_lumps", "yes")}
+                    variant={answers["neck_lumps"] === "yes" ? "default" : "outline"}
+                    className={`rounded-full px-6 font-semibold transition-all duration-300 ${
+                      answers["neck_lumps"] === "yes"
+                        ? "bg-gradient-to-r from-teal-500 to-teal-600 text-white border-0 dark:from-teal-600 dark:to-teal-700"
+                        : "border-2 border-teal-500 text-teal-600 dark:text-teal-400 dark:border-teal-600 hover:bg-teal-50 dark:hover:bg-teal-950"
+                    }`}
+                  >
+                    Yes
+                  </Button>
+                </div>
+                <div>
+                  <Button
+                    onClick={() => handleAnswer("neck_lumps", "no")}
+                    variant={answers["neck_lumps"] === "no" ? "default" : "outline"}
+                    className={`rounded-full px-6 font-semibold transition-all duration-300 ${
+                      answers["neck_lumps"] === "no"
+                        ? "bg-gradient-to-r from-teal-500 to-teal-600 text-white border-0 dark:from-teal-600 dark:to-teal-700"
+                        : "border-2 border-teal-500 text-teal-600 dark:text-teal-400 dark:border-teal-600 hover:bg-teal-50 dark:hover:bg-teal-950"
+                    }`}
+                  >
+                    No
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Question 5 - Lumps or thick spots in mouth (4 images + none of above) */}
+          <motion.div variants={itemVariants}>
+            <p className="text-lg font-semibold text-red-600 mb-4">{t("lumps_mouth")}</p>
+            <ImageSelector
+              images={lumpsImages}
+              selected={answers["lumps_mouth"] || ""}
+              onSelect={(id) => handleAnswer("lumps_mouth", id)}
             />
           </motion.div>
 
-          {/* Question 5 */}
+          {/* Question 6 - Change in speech (yes/no) */}
           <motion.div variants={itemVariants}>
-            <QuestionCard
-              question={t("speech")}
-              onAnswer={(value) => handleAnswer("speech", value)}
-              selected={answers["speech"]}
-            />
+            <p className="text-lg font-semibold text-red-600 mb-4">{t("speech")}</p>
+            <div className="bg-card dark:bg-slate-800 rounded-xl p-6 border border-border dark:border-slate-700">
+              <div className="flex gap-3">
+                <div>
+                  <Button
+                    onClick={() => handleAnswer("speech", "yes")}
+                    variant={answers["speech"] === "yes" ? "default" : "outline"}
+                    className={`rounded-full px-6 font-semibold transition-all duration-300 ${
+                      answers["speech"] === "yes"
+                        ? "bg-gradient-to-r from-teal-500 to-teal-600 text-white border-0 dark:from-teal-600 dark:to-teal-700"
+                        : "border-2 border-teal-500 text-teal-600 dark:text-teal-400 dark:border-teal-600 hover:bg-teal-50 dark:hover:bg-teal-950"
+                    }`}
+                  >
+                    Yes
+                  </Button>
+                </div>
+                <div>
+                  <Button
+                    onClick={() => handleAnswer("speech", "no")}
+                    variant={answers["speech"] === "no" ? "default" : "outline"}
+                    className={`rounded-full px-6 font-semibold transition-all duration-300 ${
+                      answers["speech"] === "no"
+                        ? "bg-gradient-to-r from-teal-500 to-teal-600 text-white border-0 dark:from-teal-600 dark:to-teal-700"
+                        : "border-2 border-teal-500 text-teal-600 dark:text-teal-400 dark:border-teal-600 hover:bg-teal-50 dark:hover:bg-teal-950"
+                    }`}
+                  >
+                    No
+                  </Button>
+                </div>
+              </div>
+            </div>
           </motion.div>
 
-          {/* Question 6 */}
+          {/* Question 7 - Difficulty chewing/swallowing (yes/no) */}
           <motion.div variants={itemVariants}>
-            <QuestionCard
-              question={t("chewing")}
-              onAnswer={(value) => handleAnswer("chewing", value)}
-              selected={answers["chewing"]}
-            />
+            <p className="text-lg font-semibold text-red-600 mb-4">{t("chewing")}</p>
+            <div className="bg-card dark:bg-slate-800 rounded-xl p-6 border border-border dark:border-slate-700">
+              <div className="flex gap-3">
+                <div>
+                  <Button
+                    onClick={() => handleAnswer("chewing", "yes")}
+                    variant={answers["chewing"] === "yes" ? "default" : "outline"}
+                    className={`rounded-full px-6 font-semibold transition-all duration-300 ${
+                      answers["chewing"] === "yes"
+                        ? "bg-gradient-to-r from-teal-500 to-teal-600 text-white border-0 dark:from-teal-600 dark:to-teal-700"
+                        : "border-2 border-teal-500 text-teal-600 dark:text-teal-400 dark:border-teal-600 hover:bg-teal-50 dark:hover:bg-teal-950"
+                    }`}
+                  >
+                    Yes
+                  </Button>
+                </div>
+                <div>
+                  <Button
+                    onClick={() => handleAnswer("chewing", "no")}
+                    variant={answers["chewing"] === "no" ? "default" : "outline"}
+                    className={`rounded-full px-6 font-semibold transition-all duration-300 ${
+                      answers["chewing"] === "no"
+                        ? "bg-gradient-to-r from-teal-500 to-teal-600 text-white border-0 dark:from-teal-600 dark:to-teal-700"
+                        : "border-2 border-teal-500 text-teal-600 dark:text-teal-400 dark:border-teal-600 hover:bg-teal-50 dark:hover:bg-teal-950"
+                    }`}
+                  >
+                    No
+                  </Button>
+                </div>
+              </div>
+            </div>
           </motion.div>
 
-          {/* Question 7 */}
+          {/* Question 8 - Oral/facial pain or perpetual sore throat (yes/no) */}
           <motion.div variants={itemVariants}>
-            <QuestionCard
-              question={t("pain")}
-              onAnswer={(value) => handleAnswer("pain", value)}
-              selected={answers["pain"]}
-            />
+            <p className="text-lg font-semibold text-red-600 mb-4">{t("oral_pain")}</p>
+            <div className="bg-card dark:bg-slate-800 rounded-xl p-6 border border-border dark:border-slate-700">
+              <div className="flex gap-3">
+                <div>
+                  <Button
+                    onClick={() => handleAnswer("oral_pain", "yes")}
+                    variant={answers["oral_pain"] === "yes" ? "default" : "outline"}
+                    className={`rounded-full px-6 font-semibold transition-all duration-300 ${
+                      answers["oral_pain"] === "yes"
+                        ? "bg-gradient-to-r from-teal-500 to-teal-600 text-white border-0 dark:from-teal-600 dark:to-teal-700"
+                        : "border-2 border-teal-500 text-teal-600 dark:text-teal-400 dark:border-teal-600 hover:bg-teal-50 dark:hover:bg-teal-950"
+                    }`}
+                  >
+                    Yes
+                  </Button>
+                </div>
+                <div>
+                  <Button
+                    onClick={() => handleAnswer("oral_pain", "no")}
+                    variant={answers["oral_pain"] === "no" ? "default" : "outline"}
+                    className={`rounded-full px-6 font-semibold transition-all duration-300 ${
+                      answers["oral_pain"] === "no"
+                        ? "bg-gradient-to-r from-teal-500 to-teal-600 text-white border-0 dark:from-teal-600 dark:to-teal-700"
+                        : "border-2 border-teal-500 text-teal-600 dark:text-teal-400 dark:border-teal-600 hover:bg-teal-50 dark:hover:bg-teal-950"
+                    }`}
+                  >
+                    No
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Question 9 - Trismus test (image + yes/no) */}
+          <motion.div variants={itemVariants}>
+            <p className="text-lg font-semibold text-red-600 mb-4">{t("trismus")}</p>
+            <div className="bg-card dark:bg-slate-800 rounded-xl p-6 border border-border dark:border-slate-700 hover:shadow-md dark:hover:shadow-lg transition-all duration-300">
+              <div className="w-full max-w-md mx-auto mb-4 rounded-lg overflow-hidden border border-border dark:border-slate-700">
+                <div className="relative w-full aspect-[4/3] bg-muted dark:bg-slate-700">
+                  <Image src={trismusImage.url} alt={trismusImage.label} fill className="object-cover" />
+                </div>
+              </div>
+              <div className="flex gap-3">
+                <div>
+                  <Button
+                    onClick={() => handleAnswer("trismus", "yes")}
+                    variant={answers["trismus"] === "yes" ? "default" : "outline"}
+                    className={`rounded-full px-6 font-semibold transition-all duration-300 ${
+                      answers["trismus"] === "yes"
+                        ? "bg-gradient-to-r from-teal-500 to-teal-600 text-white border-0 dark:from-teal-600 dark:to-teal-700"
+                        : "border-2 border-teal-500 text-teal-600 dark:text-teal-400 dark:border-teal-600 hover:bg-teal-50 dark:hover:bg-teal-950"
+                    }`}
+                  >
+                    Yes
+                  </Button>
+                </div>
+                <div>
+                  <Button
+                    onClick={() => handleAnswer("trismus", "no")}
+                    variant={answers["trismus"] === "no" ? "default" : "outline"}
+                    className={`rounded-full px-6 font-semibold transition-all duration-300 ${
+                      answers["trismus"] === "no"
+                        ? "bg-gradient-to-r from-teal-500 to-teal-600 text-white border-0 dark:from-teal-600 dark:to-teal-700"
+                        : "border-2 border-teal-500 text-teal-600 dark:text-teal-400 dark:border-teal-600 hover:bg-teal-50 dark:hover:bg-teal-950"
+                    }`}
+                  >
+                    No
+                  </Button>
+                </div>
+              </div>
+            </div>
+            {/* <div className="w-full max-w-md mx-auto mb-4 rounded-lg overflow-hidden border border-slate-200">
+              <div className="relative w-full aspect-[4/3] bg-muted dark:bg-slate-700">
+                <Image src={trismusImage.url} alt={trismusImage.label} fill className="object-cover" />
+              </div>
+            </div>
+            <div className="flex gap-3">
+              <div>
+                <Button
+                  onClick={() => handleAnswer("trismus", "yes")}
+                  variant={answers["trismus"] === "yes" ? "default" : "outline"}
+                  className={`rounded-full px-6 font-semibold transition-all duration-300 ${
+                    answers["trismus"] === "yes"
+                      ? "bg-gradient-to-r from-teal-500 to-teal-600 text-white border-0 dark:from-teal-600 dark:to-teal-700"
+                      : "border-2 border-teal-500 text-teal-600 dark:text-teal-400 dark:border-teal-600 hover:bg-teal-50 dark:hover:bg-teal-950"
+                  }`}
+                >
+                  Yes
+                </Button>
+              </div>
+              <div>
+                <Button
+                  onClick={() => handleAnswer("trismus", "no")}
+                  variant={answers["trismus"] === "no" ? "default" : "outline"}
+                  className={`rounded-full px-6 font-semibold transition-all duration-300 ${
+                    answers["trismus"] === "no"
+                      ? "bg-gradient-to-r from-teal-500 to-teal-600 text-white border-0 dark:from-teal-600 dark:to-teal-700"
+                      : "border-2 border-teal-500 text-teal-600 dark:text-teal-400 dark:border-teal-600 hover:bg-teal-50 dark:hover:bg-teal-950"
+                  }`}
+                >
+                  No
+                </Button>
+              </div>
+            </div> */}
           </motion.div>
 
           {/* Navigation Buttons */}

@@ -91,7 +91,7 @@ export default function MedicalHistoryPage({ onNext, onBack }: MedicalHistoryPag
             variants={itemVariants}
             className="bg-gradient-to-r from-green-600 to-green-700 dark:from-green-700 dark:to-green-800 text-white rounded-xl p-4 font-semibold text-lg transition-colors duration-300"
           >
-            {t("q_hiv")}
+            {t("historyOfHivHpv")}
           </motion.div>
 
           <motion.div variants={itemVariants}>

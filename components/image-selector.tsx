@@ -8,7 +8,7 @@ interface ImageSelectorProps {
   images: Array<{ id: number; label: string; url: string }>
   selected: string
   onSelect: (id: string) => void
-  title: string
+  title?: string
 }
 
 export default function ImageSelector({ images, selected, onSelect, title }: ImageSelectorProps) {
@@ -28,8 +28,8 @@ export default function ImageSelector({ images, selected, onSelect, title }: Ima
   }
 
   return (
-    <div className="bg-white rounded-xl p-6 border border-slate-200">
-      <p className="text-lg font-semibold text-red-600 mb-6">{title}</p>
+    <div className="bg-card dark:bg-slate-800 rounded-xl p-6 border border-border dark:border-slate-700">
+      {title && <p className="text-lg font-semibold text-red-600 mb-6">{title}</p>}
 
       <motion.div
         variants={containerVariants}
@@ -45,10 +45,12 @@ export default function ImageSelector({ images, selected, onSelect, title }: Ima
             whileTap={{ scale: 0.95 }}
             onClick={() => onSelect(String(img.id))}
             className={`cursor-pointer rounded-lg overflow-hidden border-2 transition-all ${
-              selected === String(img.id) ? "border-blue-600 shadow-lg" : "border-slate-200 hover:border-slate-300"
+              selected === String(img.id)
+                ? "border-blue-600 shadow-lg"
+                : "border-border dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600"
             }`}
           >
-            <div className="relative w-full aspect-square bg-slate-100">
+            <div className="relative w-full aspect-square bg-muted dark:bg-slate-700">
               <Image src={img.url || "/placeholder.svg"} alt={img.label} fill className="object-cover" />
             </div>
           </motion.div>
