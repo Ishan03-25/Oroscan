@@ -1,20 +1,19 @@
-"use client"
-
-import { useCallback } from "react"
-import { useRouter } from "next/navigation"
+import { Metadata } from "next"
 import LoginPage from "@/components/pages/login-page"
-export default function RootLogin() {
-  const router = useRouter()
+import { auth } from "@/lib/auth"
+import { redirect } from "next/navigation"
 
-  const handleLogin = useCallback(
-    (username: string) => {
-      try {
-        localStorage.setItem("oroscan_username", username)
-      } catch {}
-      router.push("/home")
-    },
-    [router]
-  )
+export const metadata: Metadata = {
+  title: "Login - Oroscan",
+  description: "Login to Oroscan - Oral Cancer Screening System",
+}
 
-  return <LoginPage onLogin={handleLogin} />
+export default async function Page() {
+  // If already logged in, redirect to home
+  const session = await auth()
+  if (session?.user) {
+    redirect("/home")
+  }
+
+  return <LoginPage />
 }
