@@ -12,7 +12,7 @@ export default async function Page() {
   // If already logged in, redirect to home
   const session = await auth()
   if (session?.user) {
-    redirect("/home")
+    redirect("/dashboard")
   }
 
   return <LoginPage />
