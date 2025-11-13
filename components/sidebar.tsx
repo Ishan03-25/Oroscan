@@ -21,8 +21,8 @@ export default function Sidebar({ open, onClose }: { open: boolean; onClose: () 
         }
      >
         <nav className="p-4 space-y-2">
-          <a className="block px-3 py-2 rounded-md hover:bg-muted" href="#">Dashboard</a>
-          <a className="block px-3 py-2 rounded-md hover:bg-muted" href="#">Profile</a>
+          <a className="block px-3 py-2 rounded-md hover:bg-muted" href="/dashboard">Dashboard</a>
+          <a className="block px-3 py-2 rounded-md hover:bg-muted" href="/home">Profile</a>
           <a className="block px-3 py-2 rounded-md hover:bg-muted" href="#">Settings</a>
         </nav>
       </aside>
