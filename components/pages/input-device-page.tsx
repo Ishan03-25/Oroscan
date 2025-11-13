@@ -5,15 +5,21 @@ import type React from "react"
 import { useState } from "react"
 import { motion } from "framer-motion"
 import { Button } from "@/components/ui/button"
-import TabNavigation from "@/components/tab-navigation"
 import ProgressBar from "@/components/progress-bar"
 import { ArrowLeft, Upload, CheckCircle } from "lucide-react"
+import { fileToBase64 } from "@/lib/utils"
+import { useRouter } from "next/navigation"
+
+import { PatientFormData, PatientFormResponse } from "@/types/form"
+import { toast } from "@/hooks/use-toast"
 
 interface InputDevicePageProps {
   onBack: () => void
+  formData: PatientFormData
 }
 
-export default function InputDevicePage({ onBack }: InputDevicePageProps) {
+export default function InputDevicePage({ onBack, formData }: InputDevicePageProps) {
+  const router = useRouter()
   const [files, setFiles] = useState<File[]>([])
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSubmitted, setIsSubmitted] = useState(false)
@@ -25,10 +31,81 @@ export default function InputDevicePage({ onBack }: InputDevicePageProps) {
   }
 
   const handleSubmit = async () => {
-    setIsSubmitting(true)
-    await new Promise((resolve) => setTimeout(resolve, 1000))
-    setIsSubmitted(true)
-    setIsSubmitting(false)
+    try {
+      setIsSubmitting(true)
+      
+      // Convert files to base64
+      const filePromises = files.map(async (file) => ({
+        name: file.name,
+        type: file.type,
+        data: await fileToBase64(file),
+        category: "device-upload",
+      }))
+
+      const uploadedFiles = await Promise.all(filePromises)
+
+      // Prepare form data
+      const submitData = {
+        patientInfo: {
+          name: formData.name,
+          age: formData.age,
+          gender: formData.gender,
+          phone: formData.phone,
+          healthAssistant: formData.healthAssistant,
+          address: formData.address,
+        },
+        medicalResponses: Object.entries(formData.medicalAnswers).map(([id, answer]) => ({
+          questionId: id,
+          answer,
+        })),
+        familyResponses: Object.entries(formData.familyAnswers).map(([id, answer]) => ({
+          questionId: id,
+          answer,
+        })),
+        featureResponses: Object.entries(formData.featureAnswers).map(([id, answer]) => ({
+          questionId: id,
+          answer,
+        })),
+        images: uploadedFiles,
+      }
+
+      // Submit to API
+      const response = await fetch("/api/submit", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(submitData),
+      })
+
+      if (!response.ok) {
+        throw new Error("Submission failed")
+      }
+
+      const result = await response.json()
+
+      // Show success message and redirect
+      toast({
+        title: "Submission Successful",
+        description: "Redirecting to analysis results...",
+        className: "bg-emerald-600 text-white",
+        duration: 3000,
+      })
+
+      // Redirect to results page
+      setIsSubmitted(true)
+      router.push(`/result?id=${result.patientId}`)
+    } catch (error) {
+      console.error("Error submitting data:", error)
+      toast({
+        title: "Submission Failed",
+        description: "There was an error submitting your data. Please try again.",
+        variant: "destructive",
+        duration: 5000,
+      })
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   const containerVariants = {
@@ -49,8 +126,6 @@ export default function InputDevicePage({ onBack }: InputDevicePageProps) {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted dark:from-slate-950 dark:via-slate-900 dark:to-slate-800 transition-colors duration-300">
-      <TabNavigation activeTab="device" />
-
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
         <div className="flex items-center gap-3">
           <span className="text-sm font-semibold text-muted-foreground">Step 5 of 5</span>
@@ -125,8 +200,9 @@ export default function InputDevicePage({ onBack }: InputDevicePageProps) {
                 <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                   <Button
                     onClick={onBack}
+                    disabled={isSubmitting}
                     variant="outline"
-                    className="border-2 border-amber-500 text-amber-600 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-950 font-semibold px-8 py-3 rounded-lg flex items-center gap-2 bg-transparent transition-colors duration-300"
+                    className="bg-transparent border-amber-500 text-amber-600 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-950 font-semibold px-8 py-3 rounded-lg flex items-center gap-2"
                   >
                     <ArrowLeft className="w-4 h-4" /> Back
                   </Button>
@@ -135,9 +211,17 @@ export default function InputDevicePage({ onBack }: InputDevicePageProps) {
                   <Button
                     onClick={handleSubmit}
                     disabled={isSubmitting || files.length === 0}
-                    className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold px-8 py-3 rounded-lg disabled:opacity-50 transition-all duration-300"
+                    className="bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 text-white font-semibold px-8 py-3 rounded-lg flex items-center gap-2"
                   >
-                    {isSubmitting ? "Submitting..." : "Submit"}
+                    {isSubmitting ? (
+                      <>
+                        <span className="animate-spin">⏳</span> Processing...
+                      </>
+                    ) : (
+                      <>
+                        Submit & Analyze <CheckCircle className="w-4 h-4" />
+                      </>
+                    )}
                   </Button>
                 </motion.div>
               </motion.div>

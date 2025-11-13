@@ -3,15 +3,18 @@
 import { useState } from "react"
 import { motion } from "framer-motion"
 import { Button } from "@/components/ui/button"
-import TabNavigation from "@/components/tab-navigation"
 import QuestionCard from "@/components/question-card"
 import ProgressBar from "@/components/progress-bar"
 import { ArrowLeft, ArrowRight } from "lucide-react"
 import { useTranslation } from "@/hooks/use-translation"
 
+import { PatientFormData } from "@/types/form"
+
 interface MedicalHistoryPageProps {
   onNext: () => void
   onBack: () => void
+  formData: PatientFormData
+  setFormData: React.Dispatch<React.SetStateAction<PatientFormData>>
 }
 
 export default function MedicalHistoryPage({ onNext, onBack }: MedicalHistoryPageProps) {
@@ -49,8 +52,6 @@ export default function MedicalHistoryPage({ onNext, onBack }: MedicalHistoryPag
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted dark:from-slate-950 dark:via-slate-900 dark:to-slate-800 transition-colors duration-300">
-      <TabNavigation activeTab="medical" />
-
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
         <div className="flex items-center gap-3">
           <span className="text-sm font-semibold text-muted-foreground">{`Step 2 of 5`}</span>

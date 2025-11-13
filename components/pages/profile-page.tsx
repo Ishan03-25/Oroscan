@@ -4,24 +4,15 @@ import { Dispatch, SetStateAction } from "react"
 import { motion, type Variants } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import TabNavigation from "@/components/tab-navigation"
 import ProgressBar from "@/components/progress-bar"
 import { ArrowRight, User, Phone, MapPin, Users } from "lucide-react"
 import { useTranslation } from "@/hooks/use-translation"
 
-interface FormData {
-  username: string
-  name: string
-  age: string
-  gender: string
-  phone: string
-  healthAssistant: string
-  address: string
-}
+import { PatientFormData } from "@/types/form"
 
 interface ProfilePageProps {
-  formData: FormData
-  setFormData: Dispatch<SetStateAction<FormData>>
+  formData: PatientFormData
+  setFormData: Dispatch<SetStateAction<PatientFormData>>
   onNext: () => void
 }
 
@@ -29,7 +20,7 @@ export default function ProfilePage({ formData, setFormData, onNext }: ProfilePa
   const { t, all } = useTranslation("profile")
   const profile = all()
 
-  const handleChange = (field: keyof FormData, value: string) => {
+  const handleChange = (field: keyof PatientFormData, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }))
   }
 
@@ -61,8 +52,6 @@ export default function ProfilePage({ formData, setFormData, onNext }: ProfilePa
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted dark:from-slate-950 dark:via-slate-900 dark:to-slate-800 transition-colors duration-300">
-      <TabNavigation activeTab="profile" />
-
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
         <div className="flex items-center gap-3">
           <span className="text-sm font-semibold text-muted-foreground">Step 1 of 5</span>

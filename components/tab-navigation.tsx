@@ -5,9 +5,10 @@ import { User, Heart, Users, Smile, Upload } from "lucide-react"
 
 interface TabNavigationProps {
   activeTab: "profile" | "medical" | "family" | "features" | "device"
+  onTabChange?: (tab: "profile" | "medical" | "family" | "features" | "device") => void
 }
 
-export default function TabNavigation({ activeTab }: TabNavigationProps) {
+export default function TabNavigation({ activeTab, onTabChange }: TabNavigationProps) {
   const tabs = [
     { id: "profile", label: "PROFILE", icon: User },
     { id: "medical", label: "MEDICAL HISTORY", icon: Heart },
@@ -19,13 +20,14 @@ export default function TabNavigation({ activeTab }: TabNavigationProps) {
   return (
     <div className="bg-background border-b border-border sticky top-16 z-40 transition-colors duration-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex overflow-x-auto gap-2 py-4">
+        <div className="flex overflow-x-auto gap-2 py-4 justify-center">
           {tabs.map((tab) => {
             const Icon = tab.icon
             const isActive = activeTab === tab.id
             return (
               <motion.button
                 key={tab.id}
+                onClick={() => onTabChange?.(tab.id as "profile" | "medical" | "family" | "features" | "device")}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 className={`flex items-center gap-2 px-4 py-2 rounded-full font-medium whitespace-nowrap transition-all duration-300 ${

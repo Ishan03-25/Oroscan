@@ -4,26 +4,40 @@ import { useState } from "react"
 import { motion } from "framer-motion"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
-import TabNavigation from "@/components/tab-navigation"
+import { toast } from "@/hooks/use-toast"
 import QuestionCard from "@/components/question-card"
 import ImageSelector from "@/components/image-selector"
 import ProgressBar from "@/components/progress-bar"
 import { ArrowLeft, ArrowRight } from "lucide-react"
 import { useTranslation } from "@/hooks/use-translation"
 
+import { PatientFormData } from "@/types/form"
+
 interface FeaturesPageProps {
   onNext: () => void
   onBack: () => void
+  formData?: PatientFormData
+  setFormData?: React.Dispatch<React.SetStateAction<PatientFormData>>
 }
 
-export default function FeaturesPage({ onNext, onBack }: FeaturesPageProps) {
-  const [answers, setAnswers] = useState<Record<string, string>>({})
+export default function FeaturesPage({ onNext, onBack, formData, setFormData }: FeaturesPageProps) {
+  const [answers, setAnswers] = useState<Record<string, string>>(formData?.featureAnswers || {})
+  const [isSubmitting, setIsSubmitting] = useState(false)
   const { t } = useTranslation("features")
   const { t: tc } = useTranslation("common")
 
   const handleAnswer = (id: string, value: string) => {
-    setAnswers((prev) => ({ ...prev, [id]: value }))
+    const newAnswers = { ...answers, [id]: value }
+    setAnswers(newAnswers)
+    if (setFormData) {
+      setFormData(prev => ({
+        ...prev,
+        featureAnswers: newAnswers,
+      }))
+    }
   }
+
+  // This page only collects answers locally and moves to next step.
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -60,8 +74,6 @@ export default function FeaturesPage({ onNext, onBack }: FeaturesPageProps) {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted dark:from-slate-950 dark:via-slate-900 dark:to-slate-800 transition-colors duration-300">
-      <TabNavigation activeTab="features" />
-
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
         <div className="flex items-center gap-3">
           <span className="text-sm font-semibold text-muted-foreground">{`Step 4 of 5`}</span>

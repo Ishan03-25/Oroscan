@@ -3,6 +3,8 @@
 import { useState, useCallback } from "react"
 import { useRouter } from "next/navigation"
 import { useLanguage } from "@/components/language-provider"
+import { PatientFormData, PatientFormResponse } from "@/types/form"
+import { toast } from "@/components/ui/use-toast"
 import AppShell from "@/components/app-shell"
 import ProfilePage from "@/components/pages/profile-page"
 import MedicalHistoryPage from "@/components/pages/medical-history-page"
@@ -12,6 +14,7 @@ import InputDevicePage from "@/components/pages/input-device-page"
 import Footer from "@/components/footer"
 import { signOut } from "next-auth/react"
 import { toast as showToast } from '@/hooks/use-toast'
+import TabNavigation from "@/components/tab-navigation"
 
 type PageType = "profile" | "medical" | "family" | "features" | "device"
 
@@ -30,6 +33,10 @@ export default function HomeFlow({ username }: HomeFlowProps) {
     phone: "",
     healthAssistant: "",
     address: "",
+    medicalAnswers: {} as Record<string, string>,
+    familyAnswers: {} as Record<string, string>,
+    featureAnswers: {} as Record<string, string>,
+    uploadedImages: [] as File[],
   })
 
   const handleLogout = useCallback(async () => {
@@ -67,13 +74,28 @@ export default function HomeFlow({ username }: HomeFlowProps) {
       case "profile":
         return <ProfilePage formData={formData} setFormData={setFormData} onNext={() => handleNavigate("medical")} />
       case "medical":
-        return <MedicalHistoryPage onNext={() => handleNavigate("family")} onBack={() => handleNavigate("profile")} />
+        return <MedicalHistoryPage 
+          formData={formData}
+          setFormData={setFormData}
+          onNext={() => handleNavigate("family")}
+          onBack={() => handleNavigate("profile")}
+        />
       case "family":
-        return <FamilyHistoryPage onNext={() => handleNavigate("features")} onBack={() => handleNavigate("medical")} />
+        return <FamilyHistoryPage
+          formData={formData}
+          setFormData={setFormData}
+          onNext={() => handleNavigate("features")}
+          onBack={() => handleNavigate("medical")}
+        />
       case "features":
-        return <FeaturesPage onNext={() => handleNavigate("device")} onBack={() => handleNavigate("family")} />
+        return <FeaturesPage
+          formData={formData}
+          setFormData={setFormData}
+          onNext={() => handleNavigate("device")}
+          onBack={() => handleNavigate("family")}
+        />
       case "device":
-        return <InputDevicePage onBack={() => handleNavigate("features")} />
+        return <InputDevicePage onBack={() => handleNavigate("features")} formData={formData} />
       default:
         return null
     }
@@ -91,6 +113,7 @@ export default function HomeFlow({ username }: HomeFlowProps) {
       onLogout={handleLogout}
       onLanguageChange={handleLanguageChange}
     >
+      <TabNavigation activeTab={currentPage} onTabChange={handleNavigate} />
       <div className="container mx-auto py-6 max-w-5xl min-h-[calc(100vh-4rem)]">
         {getCurrentPage()}
       </div>
