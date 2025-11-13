@@ -107,7 +107,7 @@ export default function LoginPage() {
               console.warn('toast error', e)
             }
 
-            setTimeout(() => router.push("/home"), 600);
+            setTimeout(() => router.push("/dashboard"), 600);
         }
         setIsLoading(false);
         return;
@@ -126,7 +126,7 @@ export default function LoginPage() {
         } catch (e) {
           console.warn('toast error', e)
         }
-        setTimeout(() => router.push("/home"), 600);
+        setTimeout(() => router.push("/dashboard"), 600);
       } else if (res.error) {
         let errorMsg =
           (res as any)?.error ||
