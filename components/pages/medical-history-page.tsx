@@ -17,8 +17,8 @@ interface MedicalHistoryPageProps {
   setFormData: React.Dispatch<React.SetStateAction<PatientFormData>>
 }
 
-export default function MedicalHistoryPage({ onNext, onBack }: MedicalHistoryPageProps) {
-  const [answers, setAnswers] = useState<Record<string, string>>({})
+export default function MedicalHistoryPage({ onNext, onBack, formData, setFormData }: MedicalHistoryPageProps) {
+  const [answers, setAnswers] = useState<Record<string, string>>(formData.medicalAnswers || {})
   const { t } = useTranslation("medical")
   const { t: tc } = useTranslation("common")
 
@@ -31,7 +31,12 @@ export default function MedicalHistoryPage({ onNext, onBack }: MedicalHistoryPag
   ]
 
   const handleAnswer = (id: string, value: string) => {
-    setAnswers((prev) => ({ ...prev, [id]: value }))
+    const newAnswers = { ...answers, [id]: value }
+    setAnswers(newAnswers)
+    setFormData(prev => ({
+      ...prev,
+      medicalAnswers: newAnswers,
+    }))
   }
 
   const containerVariants = {

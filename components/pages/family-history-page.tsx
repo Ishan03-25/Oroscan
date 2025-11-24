@@ -17,10 +17,18 @@ interface FamilyHistoryPageProps {
   setFormData: React.Dispatch<React.SetStateAction<PatientFormData>>
 }
 
-export default function FamilyHistoryPage({ onNext, onBack }: FamilyHistoryPageProps) {
-  const [answer, setAnswer] = useState<string>("")
+export default function FamilyHistoryPage({ onNext, onBack, formData, setFormData }: FamilyHistoryPageProps) {
+  const [answer, setAnswer] = useState<string>(formData.familyAnswers?.["family_cancer"] || "")
   const { t } = useTranslation("family")
   const { t: tc } = useTranslation("common")
+
+  const handleAnswer = (value: string) => {
+    setAnswer(value)
+    setFormData(prev => ({
+      ...prev,
+      familyAnswers: { family_cancer: value },
+    }))
+  }
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -86,7 +94,7 @@ export default function FamilyHistoryPage({ onNext, onBack }: FamilyHistoryPageP
           <motion.div variants={itemVariants}>
             <QuestionCard
               question={t("subtitle")}
-              onAnswer={setAnswer}
+              onAnswer={handleAnswer}
               selected={answer}
               showMoreInfo
             />

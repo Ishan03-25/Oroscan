@@ -1,5 +1,5 @@
 import { config } from "dotenv";
-import { PrismaClient } from "../lib/generated/prisma/client";
+import { PrismaClient } from "../lib/generated/prisma/client.js";
 import bcrypt from "bcryptjs";
 
 config();
@@ -44,11 +44,11 @@ async function main() {
       { id: "family_cancer", category: "family", text: "Family history of Head, Neck, Throat or oral cancer in blood relatives", type: "boolean", options: null },
     ];
 
-    async function seedQuestions(list: { id: string; category: string; text: string; type: string; options: string | null }[]) {
+    async function seedQuestions(list) {
       for (const q of list) {
-        const exists = await prisma.question.findFirst({ where: { id: q.id } });
+        const exists = await prisma.question.findFirst({ where: { category: q.category, text: q.text } });
         if (!exists) {
-          await prisma.question.create({ data: { id: q.id, category: q.category, text: q.text, type: q.type, options: q.options } });
+          await prisma.question.create({ data: { category: q.category, text: q.text, type: q.type, options: q.options } });
           console.log(`Created question [${q.id}]:`, q.text);
         } else {
           console.log(`Question already exists, skipping [${q.id}]:`, q.text);
