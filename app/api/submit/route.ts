@@ -80,64 +80,64 @@ export async function POST(req: Request) {
     }
 
     // Handle image uploads (if any)
-    const imagePromises = Array.isArray(images)
-      ? images.map(async (image: any) => {
-          const key = `patients/${patient.id}/${Date.now()}-${image.name}`
-          const command = new PutObjectCommand({
-            Bucket: BUCKET_NAME,
-            Key: key,
-            Body: Buffer.from(image.data, "base64"),
-            ContentType: image.type,
-          })
+    // const imagePromises = Array.isArray(images)
+    //   ? images.map(async (image: any) => {
+    //       const key = `patients/${patient.id}/${Date.now()}-${image.name}`
+    //       const command = new PutObjectCommand({
+    //         Bucket: BUCKET_NAME,
+    //         Key: key,
+    //         Body: Buffer.from(image.data, "base64"),
+    //         ContentType: image.type,
+    //       })
 
-          await s3Client.send(command)
-          return prisma.image.create({
-            data: {
-              patientId: patient.id,
-              url: `https://${BUCKET_NAME}.s3.amazonaws.com/${key}`,
-              type: image.category,
-            },
-          })
-        })
-      : []
+    //       await s3Client.send(command)
+    //       return prisma.image.create({
+    //         data: {
+    //           patientId: patient.id,
+    //           url: `https://${BUCKET_NAME}.s3.amazonaws.com/${key}`,
+    //           type: image.category,
+    //         },
+    //       })
+    //     })
+    //   : []
 
-    const createdImages = imagePromises.length > 0 ? await Promise.all(imagePromises) : []
+    // const createdImages = imagePromises.length > 0 ? await Promise.all(imagePromises) : []
 
     // Call AI/ML API for analysis (if configured)
-    const aiPayload = {
-      patientId: patient.id,
-      responses,
-      images: createdImages.map((img: any) => img.url),
-    }
+    // const aiPayload = {
+    //   patientId: patient.id,
+    //   responses,
+    //   images: createdImages.map((img: any) => img.url),
+    // }
 
-    let aiResult: any = { diagnosis: null, confidence: 0, metadata: null }
+    // let aiResult: any = { diagnosis: null, confidence: 0, metadata: null }
 
-    if (process.env.AI_API_ENDPOINT) {
-      const aiResponse = await fetch(process.env.AI_API_ENDPOINT!, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(aiPayload),
-      })
+    // if (process.env.AI_API_ENDPOINT) {
+    //   const aiResponse = await fetch(process.env.AI_API_ENDPOINT!, {
+    //     method: "POST",
+    //     headers: { "Content-Type": "application/json" },
+    //     body: JSON.stringify(aiPayload),
+    //   })
 
-      aiResult = await aiResponse.json()
-    } else {
-      aiResult = { diagnosis: "pending", confidence: 0, metadata: null }
-    }
+    //   aiResult = await aiResponse.json()
+    // } else {
+    //   aiResult = { diagnosis: "pending", confidence: 0, metadata: null }
+    // }
 
     // Store AI/ML results
-    await prisma.diagnosis.create({
-      data: {
-        patientId: patient.id,
-        result: aiResult.diagnosis,
-        confidence: aiResult.confidence,
-        metadata: aiResult.metadata,
-      },
-    })
+    // await prisma.diagnosis.create({
+    //   data: {
+    //     patientId: patient.id,
+    //     result: aiResult.diagnosis,
+    //     confidence: aiResult.confidence,
+    //     metadata: aiResult.metadata,
+    //   },
+    // })
 
     return NextResponse.json({
       success: true,
       patientId: patient.id,
-      diagnosis: aiResult,
+      // diagnosis: aiResult,
     })
   } catch (error) {
     console.error("Error processing submission:", error)
