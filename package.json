@@ -8,7 +8,8 @@
     "lint": "next lint",
     "start": "next start",
     "postinstall": "prisma generate",
-    "seed": "node --loader ts-node/esm scripts/seed.ts"
+    "seed": "node --loader ts-node/esm scripts/seed.ts",
+    "set-admin": "npx tsx scripts/set-admin.ts"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.920.0",

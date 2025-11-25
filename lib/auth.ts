@@ -12,6 +12,7 @@ interface DbUser {
   username: string
   name: string | null
   password: string
+  role: string
 }
 
 declare module "next-auth" {
@@ -19,6 +20,7 @@ declare module "next-auth" {
     user: {
       id: string
       username: string
+      role: string
     } & DefaultSession["user"]
   }
 }
@@ -72,7 +74,8 @@ export const authOptions = {
           id: user.id, 
           name: user.name ?? undefined, 
           email: user.email ?? undefined,
-          username: user.username // Add username to returned user object
+          username: user.username, // Add username to returned user object
+          role: user.role // Add role to returned user object
         }
       },
     }),
@@ -90,25 +93,27 @@ export const authOptions = {
   callbacks: {
     async session({ session, token }: { session: any; token: any; user: any }) {
       if (session.user) {
-        // Add user ID and username from JWT token
+        // Add user ID, username, and role from JWT token
         session.user.id = token.sub as string
         session.user.username = token.username as string
+        session.user.role = token.role as string
       }
       return session
     },
     async jwt({ token, user, account, profile }: { 
-      token: JWT & { username?: string }
+      token: JWT & { username?: string; role?: string }
       user: DbUser | null
       account: Account | null
       profile?: Profile
     }) {
       if (user) {
-        // After initial sign in, add username to JWT
+        // After initial sign in, add username and role to JWT
         const dbUser = await prisma.user.findUnique({
           where: { id: user.id ?? token.sub },
-          select: { username: true }
+          select: { username: true, role: true }
         })
         token.username = dbUser?.username
+        token.role = dbUser?.role
       }
       return token
     },

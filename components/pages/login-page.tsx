@@ -107,7 +107,16 @@ export default function LoginPage() {
               console.warn('toast error', e)
             }
 
-            setTimeout(() => router.push("/dashboard"), 600);
+            // Fetch session to get user role
+            const sessionRes = await fetch('/api/auth/session');
+            const session = await sessionRes.json();
+            
+            // Redirect based on role
+            if (session?.user?.role === 'ADMIN') {
+              setTimeout(() => window.location.href = "http://localhost:3001", 600);
+            } else {
+              setTimeout(() => router.push("/dashboard"), 600);
+            }
         }
         setIsLoading(false);
         return;
@@ -126,7 +135,17 @@ export default function LoginPage() {
         } catch (e) {
           console.warn('toast error', e)
         }
-        setTimeout(() => router.push("/dashboard"), 600);
+        
+        // Fetch session to get user role
+        const sessionRes = await fetch('/api/auth/session');
+        const session = await sessionRes.json();
+        
+        // Redirect based on role
+        if (session?.user?.role === 'ADMIN') {
+          setTimeout(() => window.location.href = "http://localhost:3001", 600);
+        } else {
+          setTimeout(() => router.push("/dashboard"), 600);
+        }
       } else if (res.error) {
         let errorMsg =
           (res as any)?.error ||
