@@ -129,6 +129,36 @@ export default function HomeFlow({ username, editPatientId }: HomeFlowProps) {
 
   const handleNavigate = (page: PageType) => setCurrentPage(page)
 
+  const handleResetAndHome = () => {
+    // Reset all form data
+    setFormData({
+      username,
+      name: "",
+      age: "",
+      gender: "",
+      phone: "",
+      healthAssistant: "",
+      address: "",
+      medicalAnswers: {} as Record<string, string>,
+      familyAnswers: {} as Record<string, string>,
+      featureAnswers: {} as Record<string, string>,
+      uploadedImages: [] as File[],
+    })
+    
+    // Reset edit mode
+    setIsEditMode(false)
+    
+    // Navigate back to profile page
+    setCurrentPage("profile")
+    
+    // Show success toast
+    showToast({
+      title: 'Ready for New Screening',
+      description: 'Form has been reset. You can start a new screening.',
+      className: 'bg-green-600 text-white border-green-700',
+    })
+  }
+
   const getCurrentPage = () => {
     switch (currentPage) {
       case "profile":
@@ -159,6 +189,7 @@ export default function HomeFlow({ username, editPatientId }: HomeFlowProps) {
           onBack={() => handleNavigate("features")} 
           formData={formData} 
           editPatientId={editPatientId}
+          onResetAndHome={handleResetAndHome}
         />
       default:
         return null

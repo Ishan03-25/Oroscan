@@ -17,13 +17,15 @@ interface InputDevicePageProps {
   onBack: () => void
   formData: PatientFormData
   editPatientId?: string
+  onResetAndHome?: () => void
 }
 
-export default function InputDevicePage({ onBack, formData, editPatientId }: InputDevicePageProps) {
+export default function InputDevicePage({ onBack, formData, editPatientId, onResetAndHome }: InputDevicePageProps) {
   const router = useRouter()
   const [files, setFiles] = useState<File[]>([])
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSubmitted, setIsSubmitted] = useState(false)
+  const [generatedPatientId, setGeneratedPatientId] = useState<string>("")
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
@@ -86,10 +88,15 @@ export default function InputDevicePage({ onBack, formData, editPatientId }: Inp
 
       const result = await response.json()
 
+      // Store patient ID if it's a new submission
+      if (!editPatientId && result.patientId) {
+        setGeneratedPatientId(result.patientId)
+      }
+
       // Show success message and redirect
       toast({
         title: editPatientId ? "Update Successful" : "Submission Successful",
-        description: editPatientId ? "Screening updated successfully" : "Redirecting to analysis results...",
+        description: editPatientId ? "Screening updated successfully" : result.patientId ? `Patient ID: ${result.patientId}` : "Redirecting to analysis results...",
         className: "bg-emerald-600 text-white",
         duration: 3000,
       })
@@ -246,12 +253,24 @@ export default function InputDevicePage({ onBack, formData, editPatientId }: Inp
                 <CheckCircle className="w-8 h-8 text-green-600 dark:text-green-400" />
               </motion.div>
               <h3 className="text-2xl font-bold text-foreground dark:text-slate-100 mb-2">Submission Successful!</h3>
-              <p className="text-muted-foreground dark:text-slate-400 mb-6">
+              <p className="text-muted-foreground dark:text-slate-400 mb-2">
                 Your screening information has been submitted successfully.
               </p>
+              {generatedPatientId && (
+                <div className="mb-6 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg border border-blue-200 dark:border-blue-800">
+                  <p className="text-sm font-medium text-blue-900 dark:text-blue-100 mb-1">Patient ID</p>
+                  <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">{generatedPatientId}</p>
+                </div>
+              )}
               <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                 <Button
-                  onClick={onBack}
+                  onClick={() => {
+                    if (onResetAndHome) {
+                      onResetAndHome()
+                    } else {
+                      onBack()
+                    }
+                  }}
                   className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold px-8 py-3 rounded-lg transition-all duration-300"
                 >
                   Back to Home
