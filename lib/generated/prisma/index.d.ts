@@ -12637,7 +12637,7 @@ export namespace Prisma {
   }
 
   export type PatientCreateInput = {
-    id?: string
+    id: string
     name: string
     age: number
     gender: string
@@ -12653,7 +12653,7 @@ export namespace Prisma {
   }
 
   export type PatientUncheckedCreateInput = {
-    id?: string
+    id: string
     name: string
     age: number
     gender: string
@@ -12701,7 +12701,7 @@ export namespace Prisma {
   }
 
   export type PatientCreateManyInput = {
-    id?: string
+    id: string
     name: string
     age: number
     gender: string
@@ -14522,7 +14522,7 @@ export namespace Prisma {
   }
 
   export type PatientCreateWithoutDoctorInput = {
-    id?: string
+    id: string
     name: string
     age: number
     gender: string
@@ -14537,7 +14537,7 @@ export namespace Prisma {
   }
 
   export type PatientUncheckedCreateWithoutDoctorInput = {
-    id?: string
+    id: string
     name: string
     age: number
     gender: string
@@ -14887,7 +14887,7 @@ export namespace Prisma {
   }
 
   export type PatientCreateWithoutResponsesInput = {
-    id?: string
+    id: string
     name: string
     age: number
     gender: string
@@ -14902,7 +14902,7 @@ export namespace Prisma {
   }
 
   export type PatientUncheckedCreateWithoutResponsesInput = {
-    id?: string
+    id: string
     name: string
     age: number
     gender: string
@@ -15061,7 +15061,7 @@ export namespace Prisma {
   }
 
   export type PatientCreateWithoutImagesInput = {
-    id?: string
+    id: string
     name: string
     age: number
     gender: string
@@ -15076,7 +15076,7 @@ export namespace Prisma {
   }
 
   export type PatientUncheckedCreateWithoutImagesInput = {
-    id?: string
+    id: string
     name: string
     age: number
     gender: string
@@ -15137,7 +15137,7 @@ export namespace Prisma {
   }
 
   export type PatientCreateWithoutDiagnosesInput = {
-    id?: string
+    id: string
     name: string
     age: number
     gender: string
@@ -15152,7 +15152,7 @@ export namespace Prisma {
   }
 
   export type PatientUncheckedCreateWithoutDiagnosesInput = {
-    id?: string
+    id: string
     name: string
     age: number
     gender: string
@@ -15369,7 +15369,7 @@ export namespace Prisma {
   }
 
   export type PatientCreateManyDoctorInput = {
-    id?: string
+    id: string
     name: string
     age: number
     gender: string

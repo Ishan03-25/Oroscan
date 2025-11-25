@@ -20,9 +20,28 @@ export async function POST(req: Request) {
       images,
     } = data
 
+    // Generate a unique 5-digit patient ID
+    let patientId: string
+    let isUnique = false
+    
+    while (!isUnique) {
+      // Generate random 5-digit number (10000-99999)
+      patientId = String(Math.floor(10000 + Math.random() * 90000))
+      
+      // Check if ID already exists
+      const existing = await prisma.patient.findUnique({
+        where: { id: patientId }
+      })
+      
+      if (!existing) {
+        isUnique = true
+      }
+    }
+
     // Create patient record
     const patient = await prisma.patient.create({
       data: {
+        id: patientId!,
         name: patientInfo.name,
         age: parseInt(patientInfo.age),
         gender: patientInfo.gender,
