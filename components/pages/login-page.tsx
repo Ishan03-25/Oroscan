@@ -113,7 +113,7 @@ export default function LoginPage() {
             
             // Redirect based on role
             if (session?.user?.role === 'ADMIN') {
-              setTimeout(() => window.location.href = "http://localhost:3001", 600);
+              setTimeout(() => router.push("/admin"), 600);
             } else {
               setTimeout(() => router.push("/dashboard"), 600);
             }
@@ -142,7 +142,7 @@ export default function LoginPage() {
         
         // Redirect based on role
         if (session?.user?.role === 'ADMIN') {
-          setTimeout(() => window.location.href = "http://localhost:3001", 600);
+          setTimeout(() => router.push("/admin"), 600);
         } else {
           setTimeout(() => router.push("/dashboard"), 600);
         }
