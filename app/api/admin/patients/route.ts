@@ -80,6 +80,7 @@ export async function POST(request: Request) {
       phone,
       address,
       healthAssistant,
+      assignedToUsername,
       medicalResponses,
       familyResponses,
       featureResponses,
@@ -89,6 +90,34 @@ export async function POST(request: Request) {
     if (!name || !age || !gender || !phone) {
       return NextResponse.json(
         { error: "Name, age, gender, and phone are required" },
+        { status: 400 }
+      )
+    }
+
+    // Validate assignedToUsername is required and is a health assistant
+    if (!assignedToUsername) {
+      return NextResponse.json(
+        { error: "Assigned Health Assistant username is required" },
+        { status: 400 }
+      )
+    }
+
+    // Verify the assigned user exists and is a health assistant
+    const assignedUser = await prisma.user.findUnique({
+      where: { username: assignedToUsername },
+      select: { id: true, username: true, role: true },
+    })
+
+    if (!assignedUser) {
+      return NextResponse.json(
+        { error: "Assigned user not found" },
+        { status: 404 }
+      )
+    }
+
+    if (assignedUser.role !== "HEALTH_ASSISTANT") {
+      return NextResponse.json(
+        { error: "Assigned user must be a Health Assistant" },
         { status: 400 }
       )
     }
@@ -107,16 +136,7 @@ export async function POST(request: Request) {
       }
     }
 
-    // Get the user ID for doctorId field
-    const user = await prisma.user.findUnique({
-      where: { username: session.user.username },
-    })
-
-    if (!user) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 })
-    }
-
-    // Create patient
+    // Create patient with assigned user as both doctor and createdBy
     const patient = await prisma.patient.create({
       data: {
         id: patientId!,
@@ -126,8 +146,8 @@ export async function POST(request: Request) {
         phone,
         address: address || "",
         healthAssistant: healthAssistant || null,
-        createdBy: session.user.username,
-        doctorId: user.id,
+        createdBy: assignedUser.username,
+        doctorId: assignedUser.id,
       },
     })
 
