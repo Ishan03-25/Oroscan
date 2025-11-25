@@ -2,8 +2,9 @@
 
 import { useEffect, useState } from "react"
 import Link from "next/link"
-import { Search, Filter, Download, ChevronDown } from "lucide-react"
+import { Search, Filter, Download, ChevronDown, UserPlus, Edit2, Trash2 } from "lucide-react"
 import * as XLSX from "xlsx"
+import PatientFormModal from "@/components/admin/patient-form-modal"
 
 interface Patient {
   id: string
@@ -32,6 +33,12 @@ export default function PatientsPage() {
   const [searchTerm, setSearchTerm] = useState("")
   const [filterGender, setFilterGender] = useState("all")
   const [showExportMenu, setShowExportMenu] = useState(false)
+  const [showCreateModal, setShowCreateModal] = useState(false)
+  const [showEditModal, setShowEditModal] = useState(false)
+  const [showDeleteModal, setShowDeleteModal] = useState(false)
+  const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null)
+  const [deleting, setDeleting] = useState(false)
+  const [error, setError] = useState("")
 
   useEffect(() => {
     fetchPatients()
@@ -48,6 +55,111 @@ export default function PatientsPage() {
       console.error("Failed to fetch patients:", error)
     } finally {
       setLoading(false)
+    }
+  }
+
+  const handleCreatePatient = async (data: any) => {
+    const response = await fetch("/api/admin/patients", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    })
+
+    if (!response.ok) {
+      const errorData = await response.json()
+      throw new Error(errorData.error || "Failed to create patient")
+    }
+
+    await fetchPatients()
+  }
+
+  const handleEditPatient = async (patient: Patient) => {
+    // Fetch full patient details including responses
+    const response = await fetch(`/api/admin/patients/${patient.id}`)
+    if (response.ok) {
+      const data = await response.json()
+      const fullPatient = data.patient
+      
+      // Organize responses by category
+      const medicalAnswers: Record<string, string> = {}
+      const familyAnswers: Record<string, string> = {}
+      const featureAnswers: Record<string, string> = {}
+
+      fullPatient.responses.forEach((r: any) => {
+        const category = r.question?.category || "medical"
+        if (category === "medical") {
+          medicalAnswers[r.questionId] = r.answer
+        } else if (category === "family") {
+          familyAnswers[r.questionId] = r.answer
+        } else if (category === "features") {
+          featureAnswers[r.questionId] = r.answer
+        }
+      })
+
+      setSelectedPatient({
+        ...fullPatient,
+        medicalAnswers,
+        familyAnswers,
+        featureAnswers,
+      })
+      setShowEditModal(true)
+      setError("")
+    }
+  }
+
+  const handleUpdatePatient = async (data: any) => {
+    if (!selectedPatient) return
+
+    const response = await fetch(`/api/admin/patients/${selectedPatient.id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    })
+
+    if (!response.ok) {
+      const errorData = await response.json()
+      throw new Error(errorData.error || "Failed to update patient")
+    }
+
+    await fetchPatients()
+    setShowEditModal(false)
+    setSelectedPatient(null)
+  }
+
+  const handleDeletePatient = (patient: Patient) => {
+    setSelectedPatient(patient)
+    setShowDeleteModal(true)
+    setError("")
+  }
+
+  const confirmDeletePatient = async () => {
+    if (!selectedPatient) return
+
+    setDeleting(true)
+    setError("")
+
+    try {
+      const response = await fetch(`/api/admin/patients/${selectedPatient.id}`, {
+        method: "DELETE",
+      })
+
+      if (response.ok) {
+        await fetchPatients()
+        setShowDeleteModal(false)
+        setSelectedPatient(null)
+      } else {
+        const data = await response.json()
+        setError(data.error || "Failed to delete patient")
+      }
+    } catch (error) {
+      console.error("Failed to delete patient:", error)
+      setError("Failed to delete patient")
+    } finally {
+      setDeleting(false)
     }
   }
 
@@ -244,44 +356,53 @@ export default function PatientsPage() {
             Total: {filteredPatients.length} patients
           </p>
         </div>
-        <div className="relative">
-          <button 
-            onClick={() => setShowExportMenu(!showExportMenu)}
-            className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+        <div className="flex gap-3">
+          <button
+            onClick={() => setShowCreateModal(true)}
+            className="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
           >
-            <Download className="w-4 h-4 mr-2" />
-            Export
-            <ChevronDown className="w-4 h-4 ml-2" />
+            <UserPlus className="w-4 h-4 mr-2" />
+            Add Patient
           </button>
-          
-          {showExportMenu && (
-            <>
-              <div 
-                className="fixed inset-0 z-10" 
-                onClick={() => setShowExportMenu(false)}
-              />
-              <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-20">
-                <button
-                  onClick={exportToJSON}
-                  className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
-                >
-                  Export as JSON
-                </button>
-                <button
-                  onClick={exportToCSV}
-                  className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
-                >
-                  Export as CSV
-                </button>
-                <button
-                  onClick={exportToExcel}
-                  className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
-                >
-                  Export as Excel (.xlsx)
-                </button>
-              </div>
-            </>
-          )}
+          <div className="relative">
+            <button 
+              onClick={() => setShowExportMenu(!showExportMenu)}
+              className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              <Download className="w-4 h-4 mr-2" />
+              Export
+              <ChevronDown className="w-4 h-4 ml-2" />
+            </button>
+            
+            {showExportMenu && (
+              <>
+                <div 
+                  className="fixed inset-0 z-10" 
+                  onClick={() => setShowExportMenu(false)}
+                />
+                <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-20">
+                  <button
+                    onClick={exportToJSON}
+                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
+                  >
+                    Export as JSON
+                  </button>
+                  <button
+                    onClick={exportToCSV}
+                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
+                  >
+                    Export as CSV
+                  </button>
+                  <button
+                    onClick={exportToExcel}
+                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
+                  >
+                    Export as Excel (.xlsx)
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
         </div>
       </div>
 
@@ -383,12 +504,28 @@ export default function PatientsPage() {
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm">
-                      <Link
-                        href={`/admin/patients/${patient.id}`}
-                        className="text-blue-600 hover:text-blue-800 font-medium"
-                      >
-                        View
-                      </Link>
+                      <div className="flex items-center gap-2">
+                        <Link
+                          href={`/admin/patients/${patient.id}`}
+                          className="text-blue-600 hover:text-blue-800 font-medium"
+                        >
+                          View
+                        </Link>
+                        <button
+                          onClick={() => handleEditPatient(patient)}
+                          className="text-blue-600 hover:text-blue-800 transition-colors"
+                          title="Edit patient"
+                        >
+                          <Edit2 className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={() => handleDeletePatient(patient)}
+                          className="text-red-600 hover:text-red-800 transition-colors"
+                          title="Delete patient"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))
@@ -403,6 +540,81 @@ export default function PatientsPage() {
           </table>
         </div>
       </div>
+
+      {/* Create Patient Modal */}
+      <PatientFormModal
+        isOpen={showCreateModal}
+        onClose={() => setShowCreateModal(false)}
+        onSubmit={handleCreatePatient}
+        mode="create"
+      />
+
+      {/* Edit Patient Modal */}
+      {selectedPatient && (
+        <PatientFormModal
+          isOpen={showEditModal}
+          onClose={() => {
+            setShowEditModal(false)
+            setSelectedPatient(null)
+          }}
+          onSubmit={handleUpdatePatient}
+          initialData={selectedPatient}
+          mode="edit"
+        />
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteModal && selectedPatient && (
+        <div className="fixed inset-0 z-50 overflow-y-auto">
+          <div className="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:p-0">
+            <div
+              className="fixed inset-0 transition-opacity bg-gray-500 bg-opacity-75"
+              onClick={() => setShowDeleteModal(false)}
+            />
+
+            <div className="relative inline-block px-4 pt-5 pb-4 overflow-hidden text-left align-bottom transition-all transform bg-white rounded-lg shadow-xl sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6">
+              <div className="sm:flex sm:items-start">
+                <div className="flex items-center justify-center flex-shrink-0 w-12 h-12 mx-auto bg-red-100 rounded-full sm:mx-0 sm:h-10 sm:w-10">
+                  <Trash2 className="w-6 h-6 text-red-600" />
+                </div>
+                <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left flex-1">
+                  <h3 className="text-lg font-medium leading-6 text-gray-900">
+                    Delete Patient
+                  </h3>
+                  <div className="mt-2">
+                    <p className="text-sm text-gray-500">
+                      Are you sure you want to delete patient <span className="font-semibold">{selectedPatient.name}</span> (ID: {selectedPatient.id})? 
+                      This action cannot be undone and will delete all associated records.
+                    </p>
+                  </div>
+                  {error && (
+                    <div className="mt-3 p-3 bg-red-50 border border-red-200 rounded-lg">
+                      <p className="text-sm text-red-600">{error}</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+              <div className="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse gap-3">
+                <button
+                  type="button"
+                  disabled={deleting}
+                  onClick={confirmDeletePatient}
+                  className="inline-flex justify-center w-full px-4 py-2 text-base font-medium text-white bg-red-600 border border-transparent rounded-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm disabled:bg-red-400"
+                >
+                  {deleting ? "Deleting..." : "Delete"}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setShowDeleteModal(false)}
+                  className="inline-flex justify-center w-full px-4 py-2 mt-3 text-base font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:w-auto sm:text-sm"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

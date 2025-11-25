@@ -215,7 +215,7 @@ export default function InputDevicePage({ onBack, formData, editPatientId }: Inp
                 <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                   <Button
                     onClick={handleSubmit}
-                    disabled={isSubmitting || files.length === 0}
+                    // disabled={isSubmitting || files.length === 0}
                     className="bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 text-white font-semibold px-8 py-3 rounded-lg flex items-center gap-2"
                   >
                     {isSubmitting ? (

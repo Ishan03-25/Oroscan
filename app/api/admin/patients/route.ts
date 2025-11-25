@@ -61,3 +61,138 @@ export async function GET() {
     )
   }
 }
+
+export async function POST(request: Request) {
+  try {
+    const session = await auth()
+    if (!session || !session.user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    }
+    if (session.user.role !== 'ADMIN') {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 })
+    }
+
+    const data = await request.json()
+    const {
+      name,
+      age,
+      gender,
+      phone,
+      address,
+      healthAssistant,
+      medicalResponses,
+      familyResponses,
+      featureResponses,
+    } = data
+
+    // Validate required fields
+    if (!name || !age || !gender || !phone) {
+      return NextResponse.json(
+        { error: "Name, age, gender, and phone are required" },
+        { status: 400 }
+      )
+    }
+
+    // Generate unique 5-digit patient ID
+    let patientId: string
+    let isUnique = false
+    
+    while (!isUnique) {
+      patientId = Math.floor(10000 + Math.random() * 90000).toString()
+      const existing = await prisma.patient.findUnique({
+        where: { id: patientId },
+      })
+      if (!existing) {
+        isUnique = true
+      }
+    }
+
+    // Get the user ID for doctorId field
+    const user = await prisma.user.findUnique({
+      where: { username: session.user.username },
+    })
+
+    if (!user) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 })
+    }
+
+    // Create patient
+    const patient = await prisma.patient.create({
+      data: {
+        id: patientId!,
+        name,
+        age: parseInt(age),
+        gender,
+        phone,
+        address: address || "",
+        healthAssistant: healthAssistant || null,
+        createdBy: session.user.username,
+        doctorId: user.id,
+      },
+    })
+
+    // Prepare and store responses
+    const med = Array.isArray(medicalResponses) ? medicalResponses : []
+    const fam = Array.isArray(familyResponses) ? familyResponses : []
+    const feat = Array.isArray(featureResponses) ? featureResponses : []
+
+    const allResponses = [...med, ...fam, ...feat]
+
+    if (allResponses.length > 0) {
+      const questionIds = Array.from(new Set(allResponses.map((r: any) => r.questionId)))
+
+      const existing = await prisma.question.findMany({
+        where: { id: { in: questionIds } },
+        select: { id: true },
+      })
+
+      const existingIds = new Set(existing.map((q) => q.id))
+
+      const idToCategory: Record<string, string> = {}
+      med.forEach((r: any) => (idToCategory[r.questionId] = "medical"))
+      fam.forEach((r: any) => (idToCategory[r.questionId] = "family"))
+      feat.forEach((r: any) => (idToCategory[r.questionId] = "features"))
+
+      const toCreate = questionIds
+        .filter((qid) => !existingIds.has(qid))
+        .map((qid) => ({
+          id: qid,
+          category: idToCategory[qid] || "medical",
+          text: qid.replace(/[_-]/g, " ").replace(/\b\w/g, (c: string) => c.toUpperCase()),
+          type: "choice",
+        }))
+
+      if (toCreate.length > 0) {
+        await prisma.question.createMany({ data: toCreate, skipDuplicates: true })
+      }
+
+      const responses = allResponses.map((response: any) => ({
+        patientId: patient.id,
+        questionId: response.questionId,
+        answer: response.answer,
+      }))
+
+      await prisma.response.createMany({ data: responses })
+    }
+
+    return NextResponse.json({
+      success: true,
+      patient: {
+        id: patient.id,
+        name: patient.name,
+        age: patient.age,
+        gender: patient.gender,
+        phone: patient.phone,
+        address: patient.address,
+        healthAssistant: patient.healthAssistant,
+        createdAt: patient.createdAt.toISOString(),
+      },
+    })
+  } catch (error) {
+    console.error("Failed to create patient:", error)
+    return NextResponse.json(
+      { error: "Failed to create patient" },
+      { status: 500 }
+    )
+  }
+}
