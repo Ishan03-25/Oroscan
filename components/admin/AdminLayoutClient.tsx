@@ -10,12 +10,14 @@ import {
   Settings,
   Menu,
   X,
-  LogOut
+  LogOut,
+  UserCog
 } from "lucide-react"
 
 const navItems = [
   { name: "Dashboard", href: "/admin/dashboard", icon: LayoutDashboard },
   { name: "Patients", href: "/admin/patients", icon: Users },
+  { name: "Users", href: "/admin/users", icon: UserCog },
   { name: "Reports", href: "/admin/reports", icon: FileText },
   { name: "Settings", href: "/admin/settings", icon: Settings },
 ]
