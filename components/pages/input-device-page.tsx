@@ -94,7 +94,7 @@ export default function InputDevicePage({ onBack, formData }: InputDevicePagePro
 
       // Redirect to results page
       setIsSubmitted(true)
-      router.push(`/result?id=${result.patientId}`)
+      // router.push(`/result?id=${result.patientId}`)
     } catch (error) {
       console.error("Error submitting data:", error)
       toast({
