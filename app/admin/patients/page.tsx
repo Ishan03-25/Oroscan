@@ -92,20 +92,49 @@ export default function PatientsPage() {
   }
 
   const exportToCSV = () => {
-    const headers = ["ID", "Name", "Age", "Gender", "Phone", "Address", "Health Assistant", "Total Responses", "Diagnosis", "Confidence", "Registration Date"]
-    const rows = filteredPatients.map(patient => [
-      patient.id,
-      patient.name,
-      patient.age,
-      patient.gender,
-      patient.phone,
-      patient.address,
-      patient.healthAssistant || "N/A",
-      patient.responses.length,
-      patient.diagnosis?.result || "Pending",
-      patient.diagnosis?.confidence ? `${(patient.diagnosis.confidence * 100).toFixed(1)}%` : "N/A",
-      new Date(patient.createdAt).toLocaleDateString()
-    ])
+    // Create comprehensive CSV with patient details and responses
+    const headers = ["Patient ID", "Name", "Age", "Gender", "Phone", "Address", "Health Assistant", "Question ID", "Answer", "Diagnosis", "Confidence", "Registration Date", "Response Date"]
+    const rows: string[][] = []
+    
+    filteredPatients.forEach(patient => {
+      if (patient.responses.length > 0) {
+        // Create a row for each response
+        patient.responses.forEach(response => {
+          rows.push([
+            patient.id,
+            patient.name,
+            patient.age.toString(),
+            patient.gender,
+            patient.phone,
+            patient.address,
+            patient.healthAssistant || "N/A",
+            response.questionId,
+            response.answer,
+            patient.diagnosis?.result || "Pending",
+            patient.diagnosis?.confidence ? `${(patient.diagnosis.confidence * 100).toFixed(1)}%` : "N/A",
+            new Date(patient.createdAt).toLocaleDateString(),
+            new Date(response.createdAt).toLocaleDateString()
+          ])
+        })
+      } else {
+        // If no responses, create one row with patient info
+        rows.push([
+          patient.id,
+          patient.name,
+          patient.age.toString(),
+          patient.gender,
+          patient.phone,
+          patient.address,
+          patient.healthAssistant || "N/A",
+          "N/A",
+          "No responses",
+          patient.diagnosis?.result || "Pending",
+          patient.diagnosis?.confidence ? `${(patient.diagnosis.confidence * 100).toFixed(1)}%` : "N/A",
+          new Date(patient.createdAt).toLocaleDateString(),
+          "N/A"
+        ])
+      }
+    })
 
     const csvContent = [
       headers.join(","),
@@ -116,7 +145,7 @@ export default function PatientsPage() {
     const url = URL.createObjectURL(blob)
     const link = document.createElement("a")
     link.href = url
-    link.download = `patients_${new Date().toISOString().split('T')[0]}.csv`
+    link.download = `patients_complete_${new Date().toISOString().split('T')[0]}.csv`
     document.body.appendChild(link)
     link.click()
     document.body.removeChild(link)
@@ -125,7 +154,7 @@ export default function PatientsPage() {
   }
 
   const exportToExcel = () => {
-    // Main patients sheet
+    // Main patients sheet with comprehensive info
     const dataToExport = filteredPatients.map(patient => ({
       "Patient ID": patient.id,
       "Name": patient.name,
@@ -142,7 +171,7 @@ export default function PatientsPage() {
 
     const worksheet = XLSX.utils.json_to_sheet(dataToExport)
     const workbook = XLSX.utils.book_new()
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Patients")
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Patients Summary")
 
     // Set column widths for patients sheet
     worksheet["!cols"] = [
@@ -159,13 +188,17 @@ export default function PatientsPage() {
       { wch: 18 }  // Date
     ]
 
-    // Responses sheet
+    // Detailed responses sheet with health assistant info
     const responsesData: any[] = []
     filteredPatients.forEach(patient => {
       patient.responses.forEach(response => {
         responsesData.push({
           "Patient ID": patient.id,
           "Patient Name": patient.name,
+          "Age": patient.age,
+          "Gender": patient.gender.charAt(0).toUpperCase() + patient.gender.slice(1),
+          "Phone": patient.phone,
+          "Health Assistant": patient.healthAssistant || "N/A",
           "Question ID": response.questionId,
           "Answer": response.answer,
           "Answered At": new Date(response.createdAt).toLocaleString()
@@ -175,17 +208,21 @@ export default function PatientsPage() {
 
     if (responsesData.length > 0) {
       const responsesSheet = XLSX.utils.json_to_sheet(responsesData)
-      XLSX.utils.book_append_sheet(workbook, responsesSheet, "Responses")
+      XLSX.utils.book_append_sheet(workbook, responsesSheet, "Detailed Responses")
       responsesSheet["!cols"] = [
-        { wch: 30 }, // Patient ID
+        { wch: 12 }, // Patient ID
         { wch: 20 }, // Patient Name
-        { wch: 20 }, // Question ID
+        { wch: 8 },  // Age
+        { wch: 10 }, // Gender
+        { wch: 15 }, // Phone
+        { wch: 20 }, // Health Assistant
+        { wch: 25 }, // Question ID
         { wch: 40 }, // Answer
         { wch: 20 }  // Answered At
       ]
     }
 
-    XLSX.writeFile(workbook, `patients_${new Date().toISOString().split('T')[0]}.xlsx`)
+    XLSX.writeFile(workbook, `patients_complete_${new Date().toISOString().split('T')[0]}.xlsx`)
     setShowExportMenu(false)
   }
 

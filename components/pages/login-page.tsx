@@ -144,7 +144,7 @@ export default function LoginPage() {
         if (session?.user?.role === 'ADMIN') {
           setTimeout(() => router.push("/admin"), 600);
         } else {
-          setTimeout(() => router.push("/dashboard"), 600);
+          setTimeout(() => router.push("/home"), 600);
         }
       } else if (res.error) {
         let errorMsg =

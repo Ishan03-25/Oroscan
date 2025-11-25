@@ -4,6 +4,126 @@ import { s3Client, BUCKET_NAME } from "@/lib/s3"
 import { PutObjectCommand } from "@aws-sdk/client-s3"
 import { NextResponse } from "next/server"
 
+export async function PUT(req: Request) {
+  try {
+    const session = await auth()
+    if (!session || !session.user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    }
+
+    const data = await req.json()
+    const {
+      patientId,
+      patientInfo,
+      medicalResponses,
+      familyResponses,
+      featureResponses,
+    } = data
+
+    if (!patientId) {
+      return NextResponse.json({ error: "Patient ID is required" }, { status: 400 })
+    }
+
+    // Check if patient exists and user has permission
+    const existingPatient = await prisma.patient.findUnique({
+      where: { id: patientId },
+    })
+
+    if (!existingPatient) {
+      return NextResponse.json({ error: "Patient not found" }, { status: 404 })
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { username: session.user.username },
+    })
+
+    if (!user) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 })
+    }
+
+    // Health assistants can only edit screenings they created
+    if (user.role === 'HEALTH_ASSISTANT' && existingPatient.createdBy !== user.username) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 })
+    }
+
+    // Update patient record
+    await prisma.patient.update({
+      where: { id: patientId },
+      data: {
+        name: patientInfo.name,
+        age: parseInt(patientInfo.age),
+        gender: patientInfo.gender,
+        phone: patientInfo.phone,
+        healthAssistant: patientInfo.healthAssistant,
+        address: patientInfo.address,
+      },
+    })
+
+    // Delete existing responses
+    await prisma.response.deleteMany({
+      where: { patientId },
+    })
+
+    // Prepare and store new responses
+    const med = Array.isArray(medicalResponses) ? medicalResponses : []
+    const fam = Array.isArray(familyResponses) ? familyResponses : []
+    const feat = Array.isArray(featureResponses) ? featureResponses : []
+
+    const allResponses = [...med, ...fam, ...feat]
+
+    const questionIds = Array.from(new Set(allResponses.map((r: any) => r.questionId)))
+
+    if (questionIds.length > 0) {
+      const existing = await prisma.question.findMany({
+        where: { id: { in: questionIds } },
+        select: { id: true },
+      })
+
+      const existingIds = new Set(existing.map((q) => q.id))
+
+      const idToCategory: Record<string, string> = {}
+      med.forEach((r: any) => (idToCategory[r.questionId] = "medical"))
+      fam.forEach((r: any) => (idToCategory[r.questionId] = "family"))
+      feat.forEach((r: any) => (idToCategory[r.questionId] = "features"))
+
+      const toCreate = questionIds
+        .filter((id) => !existingIds.has(id))
+        .map((id) => ({
+          id,
+          category: idToCategory[id] || "medical",
+          text: id.replace(/[_-]/g, " ").replace(/\b\w/g, (c: string) => c.toUpperCase()),
+          type: "choice",
+        }))
+
+      if (toCreate.length > 0) {
+        await prisma.question.createMany({ data: toCreate, skipDuplicates: true })
+      }
+    }
+
+    const responses = allResponses.map((response: any) => ({
+      patientId,
+      questionId: response.questionId,
+      answer: response.answer,
+    }))
+
+    if (responses.length > 0) {
+      await prisma.response.createMany({ data: responses })
+    }
+
+    return NextResponse.json({
+      success: true,
+      patientId,
+      message: "Patient updated successfully",
+    })
+  } catch (error) {
+    console.error("Error updating patient:", error)
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    )
+  }
+}
+
 export async function POST(req: Request) {
   try {
     const session = await auth()
@@ -48,6 +168,7 @@ export async function POST(req: Request) {
         phone: patientInfo.phone,
         healthAssistant: patientInfo.healthAssistant,
         address: patientInfo.address,
+        createdBy: session.user.username, // Track who created this screening
         doctorId: session.user.id,
       },
     })

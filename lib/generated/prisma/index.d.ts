@@ -2941,6 +2941,7 @@ export namespace Prisma {
     phone: string | null
     healthAssistant: string | null
     address: string | null
+    createdBy: string | null
     doctorId: string | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -2954,6 +2955,7 @@ export namespace Prisma {
     phone: string | null
     healthAssistant: string | null
     address: string | null
+    createdBy: string | null
     doctorId: string | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -2967,6 +2969,7 @@ export namespace Prisma {
     phone: number
     healthAssistant: number
     address: number
+    createdBy: number
     doctorId: number
     createdAt: number
     updatedAt: number
@@ -2990,6 +2993,7 @@ export namespace Prisma {
     phone?: true
     healthAssistant?: true
     address?: true
+    createdBy?: true
     doctorId?: true
     createdAt?: true
     updatedAt?: true
@@ -3003,6 +3007,7 @@ export namespace Prisma {
     phone?: true
     healthAssistant?: true
     address?: true
+    createdBy?: true
     doctorId?: true
     createdAt?: true
     updatedAt?: true
@@ -3016,6 +3021,7 @@ export namespace Prisma {
     phone?: true
     healthAssistant?: true
     address?: true
+    createdBy?: true
     doctorId?: true
     createdAt?: true
     updatedAt?: true
@@ -3116,6 +3122,7 @@ export namespace Prisma {
     phone: string
     healthAssistant: string | null
     address: string
+    createdBy: string | null
     doctorId: string
     createdAt: Date
     updatedAt: Date
@@ -3148,6 +3155,7 @@ export namespace Prisma {
     phone?: boolean
     healthAssistant?: boolean
     address?: boolean
+    createdBy?: boolean
     doctorId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -3166,6 +3174,7 @@ export namespace Prisma {
     phone?: boolean
     healthAssistant?: boolean
     address?: boolean
+    createdBy?: boolean
     doctorId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -3180,6 +3189,7 @@ export namespace Prisma {
     phone?: boolean
     healthAssistant?: boolean
     address?: boolean
+    createdBy?: boolean
     doctorId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -3194,12 +3204,13 @@ export namespace Prisma {
     phone?: boolean
     healthAssistant?: boolean
     address?: boolean
+    createdBy?: boolean
     doctorId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type PatientOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "age" | "gender" | "phone" | "healthAssistant" | "address" | "doctorId" | "createdAt" | "updatedAt", ExtArgs["result"]["patient"]>
+  export type PatientOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "age" | "gender" | "phone" | "healthAssistant" | "address" | "createdBy" | "doctorId" | "createdAt" | "updatedAt", ExtArgs["result"]["patient"]>
   export type PatientInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     doctor?: boolean | UserDefaultArgs<ExtArgs>
     responses?: boolean | Patient$responsesArgs<ExtArgs>
@@ -3230,6 +3241,7 @@ export namespace Prisma {
       phone: string
       healthAssistant: string | null
       address: string
+      createdBy: string | null
       doctorId: string
       createdAt: Date
       updatedAt: Date
@@ -3667,6 +3679,7 @@ export namespace Prisma {
     readonly phone: FieldRef<"Patient", 'String'>
     readonly healthAssistant: FieldRef<"Patient", 'String'>
     readonly address: FieldRef<"Patient", 'String'>
+    readonly createdBy: FieldRef<"Patient", 'String'>
     readonly doctorId: FieldRef<"Patient", 'String'>
     readonly createdAt: FieldRef<"Patient", 'DateTime'>
     readonly updatedAt: FieldRef<"Patient", 'DateTime'>
@@ -11750,6 +11763,7 @@ export namespace Prisma {
     phone: 'phone',
     healthAssistant: 'healthAssistant',
     address: 'address',
+    createdBy: 'createdBy',
     doctorId: 'doctorId',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
@@ -12077,6 +12091,7 @@ export namespace Prisma {
     phone?: StringFilter<"Patient"> | string
     healthAssistant?: StringNullableFilter<"Patient"> | string | null
     address?: StringFilter<"Patient"> | string
+    createdBy?: StringNullableFilter<"Patient"> | string | null
     doctorId?: StringFilter<"Patient"> | string
     createdAt?: DateTimeFilter<"Patient"> | Date | string
     updatedAt?: DateTimeFilter<"Patient"> | Date | string
@@ -12094,6 +12109,7 @@ export namespace Prisma {
     phone?: SortOrder
     healthAssistant?: SortOrderInput | SortOrder
     address?: SortOrder
+    createdBy?: SortOrderInput | SortOrder
     doctorId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -12114,6 +12130,7 @@ export namespace Prisma {
     phone?: StringFilter<"Patient"> | string
     healthAssistant?: StringNullableFilter<"Patient"> | string | null
     address?: StringFilter<"Patient"> | string
+    createdBy?: StringNullableFilter<"Patient"> | string | null
     doctorId?: StringFilter<"Patient"> | string
     createdAt?: DateTimeFilter<"Patient"> | Date | string
     updatedAt?: DateTimeFilter<"Patient"> | Date | string
@@ -12131,6 +12148,7 @@ export namespace Prisma {
     phone?: SortOrder
     healthAssistant?: SortOrderInput | SortOrder
     address?: SortOrder
+    createdBy?: SortOrderInput | SortOrder
     doctorId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -12152,6 +12170,7 @@ export namespace Prisma {
     phone?: StringWithAggregatesFilter<"Patient"> | string
     healthAssistant?: StringNullableWithAggregatesFilter<"Patient"> | string | null
     address?: StringWithAggregatesFilter<"Patient"> | string
+    createdBy?: StringNullableWithAggregatesFilter<"Patient"> | string | null
     doctorId?: StringWithAggregatesFilter<"Patient"> | string
     createdAt?: DateTimeWithAggregatesFilter<"Patient"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Patient"> | Date | string
@@ -12702,6 +12721,7 @@ export namespace Prisma {
     phone: string
     healthAssistant?: string | null
     address: string
+    createdBy?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     doctor: UserCreateNestedOneWithoutPatientsInput
@@ -12718,6 +12738,7 @@ export namespace Prisma {
     phone: string
     healthAssistant?: string | null
     address: string
+    createdBy?: string | null
     doctorId: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -12734,6 +12755,7 @@ export namespace Prisma {
     phone?: StringFieldUpdateOperationsInput | string
     healthAssistant?: NullableStringFieldUpdateOperationsInput | string | null
     address?: StringFieldUpdateOperationsInput | string
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     doctor?: UserUpdateOneRequiredWithoutPatientsNestedInput
@@ -12750,6 +12772,7 @@ export namespace Prisma {
     phone?: StringFieldUpdateOperationsInput | string
     healthAssistant?: NullableStringFieldUpdateOperationsInput | string | null
     address?: StringFieldUpdateOperationsInput | string
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
     doctorId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -12766,6 +12789,7 @@ export namespace Prisma {
     phone: string
     healthAssistant?: string | null
     address: string
+    createdBy?: string | null
     doctorId: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -12779,6 +12803,7 @@ export namespace Prisma {
     phone?: StringFieldUpdateOperationsInput | string
     healthAssistant?: NullableStringFieldUpdateOperationsInput | string | null
     address?: StringFieldUpdateOperationsInput | string
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -12791,6 +12816,7 @@ export namespace Prisma {
     phone?: StringFieldUpdateOperationsInput | string
     healthAssistant?: NullableStringFieldUpdateOperationsInput | string | null
     address?: StringFieldUpdateOperationsInput | string
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
     doctorId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -13502,6 +13528,7 @@ export namespace Prisma {
     phone?: SortOrder
     healthAssistant?: SortOrder
     address?: SortOrder
+    createdBy?: SortOrder
     doctorId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -13519,6 +13546,7 @@ export namespace Prisma {
     phone?: SortOrder
     healthAssistant?: SortOrder
     address?: SortOrder
+    createdBy?: SortOrder
     doctorId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -13532,6 +13560,7 @@ export namespace Prisma {
     phone?: SortOrder
     healthAssistant?: SortOrder
     address?: SortOrder
+    createdBy?: SortOrder
     doctorId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -14628,6 +14657,7 @@ export namespace Prisma {
     phone: string
     healthAssistant?: string | null
     address: string
+    createdBy?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     responses?: ResponseCreateNestedManyWithoutPatientInput
@@ -14643,6 +14673,7 @@ export namespace Prisma {
     phone: string
     healthAssistant?: string | null
     address: string
+    createdBy?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     responses?: ResponseUncheckedCreateNestedManyWithoutPatientInput
@@ -14747,6 +14778,7 @@ export namespace Prisma {
     phone?: StringFilter<"Patient"> | string
     healthAssistant?: StringNullableFilter<"Patient"> | string | null
     address?: StringFilter<"Patient"> | string
+    createdBy?: StringNullableFilter<"Patient"> | string | null
     doctorId?: StringFilter<"Patient"> | string
     createdAt?: DateTimeFilter<"Patient"> | Date | string
     updatedAt?: DateTimeFilter<"Patient"> | Date | string
@@ -14997,6 +15029,7 @@ export namespace Prisma {
     phone: string
     healthAssistant?: string | null
     address: string
+    createdBy?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     doctor: UserCreateNestedOneWithoutPatientsInput
@@ -15012,6 +15045,7 @@ export namespace Prisma {
     phone: string
     healthAssistant?: string | null
     address: string
+    createdBy?: string | null
     doctorId: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -15068,6 +15102,7 @@ export namespace Prisma {
     phone?: StringFieldUpdateOperationsInput | string
     healthAssistant?: NullableStringFieldUpdateOperationsInput | string | null
     address?: StringFieldUpdateOperationsInput | string
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     doctor?: UserUpdateOneRequiredWithoutPatientsNestedInput
@@ -15083,6 +15118,7 @@ export namespace Prisma {
     phone?: StringFieldUpdateOperationsInput | string
     healthAssistant?: NullableStringFieldUpdateOperationsInput | string | null
     address?: StringFieldUpdateOperationsInput | string
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
     doctorId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -15171,6 +15207,7 @@ export namespace Prisma {
     phone: string
     healthAssistant?: string | null
     address: string
+    createdBy?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     doctor: UserCreateNestedOneWithoutPatientsInput
@@ -15186,6 +15223,7 @@ export namespace Prisma {
     phone: string
     healthAssistant?: string | null
     address: string
+    createdBy?: string | null
     doctorId: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -15217,6 +15255,7 @@ export namespace Prisma {
     phone?: StringFieldUpdateOperationsInput | string
     healthAssistant?: NullableStringFieldUpdateOperationsInput | string | null
     address?: StringFieldUpdateOperationsInput | string
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     doctor?: UserUpdateOneRequiredWithoutPatientsNestedInput
@@ -15232,6 +15271,7 @@ export namespace Prisma {
     phone?: StringFieldUpdateOperationsInput | string
     healthAssistant?: NullableStringFieldUpdateOperationsInput | string | null
     address?: StringFieldUpdateOperationsInput | string
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
     doctorId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -15247,6 +15287,7 @@ export namespace Prisma {
     phone: string
     healthAssistant?: string | null
     address: string
+    createdBy?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     doctor: UserCreateNestedOneWithoutPatientsInput
@@ -15262,6 +15303,7 @@ export namespace Prisma {
     phone: string
     healthAssistant?: string | null
     address: string
+    createdBy?: string | null
     doctorId: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -15293,6 +15335,7 @@ export namespace Prisma {
     phone?: StringFieldUpdateOperationsInput | string
     healthAssistant?: NullableStringFieldUpdateOperationsInput | string | null
     address?: StringFieldUpdateOperationsInput | string
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     doctor?: UserUpdateOneRequiredWithoutPatientsNestedInput
@@ -15308,6 +15351,7 @@ export namespace Prisma {
     phone?: StringFieldUpdateOperationsInput | string
     healthAssistant?: NullableStringFieldUpdateOperationsInput | string | null
     address?: StringFieldUpdateOperationsInput | string
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
     doctorId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -15487,6 +15531,7 @@ export namespace Prisma {
     phone: string
     healthAssistant?: string | null
     address: string
+    createdBy?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -15559,6 +15604,7 @@ export namespace Prisma {
     phone?: StringFieldUpdateOperationsInput | string
     healthAssistant?: NullableStringFieldUpdateOperationsInput | string | null
     address?: StringFieldUpdateOperationsInput | string
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     responses?: ResponseUpdateManyWithoutPatientNestedInput
@@ -15574,6 +15620,7 @@ export namespace Prisma {
     phone?: StringFieldUpdateOperationsInput | string
     healthAssistant?: NullableStringFieldUpdateOperationsInput | string | null
     address?: StringFieldUpdateOperationsInput | string
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     responses?: ResponseUncheckedUpdateManyWithoutPatientNestedInput
@@ -15589,6 +15636,7 @@ export namespace Prisma {
     phone?: StringFieldUpdateOperationsInput | string
     healthAssistant?: NullableStringFieldUpdateOperationsInput | string | null
     address?: StringFieldUpdateOperationsInput | string
+    createdBy?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useCallback } from "react"
+import { useState, useCallback, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { useLanguage } from "@/components/language-provider"
 import { PatientFormData, PatientFormResponse } from "@/types/form"
@@ -20,11 +20,14 @@ type PageType = "profile" | "medical" | "family" | "features" | "device"
 
 interface HomeFlowProps {
   username: string
+  editPatientId?: string
 }
 
-export default function HomeFlow({ username }: HomeFlowProps) {
+export default function HomeFlow({ username, editPatientId }: HomeFlowProps) {
   const router = useRouter()
   const [currentPage, setCurrentPage] = useState<PageType>("profile")
+  const [isEditMode, setIsEditMode] = useState(false)
+  const [loading, setLoading] = useState(!!editPatientId)
   const [formData, setFormData] = useState({
     username,
     name: "",
@@ -38,6 +41,63 @@ export default function HomeFlow({ username }: HomeFlowProps) {
     featureAnswers: {} as Record<string, string>,
     uploadedImages: [] as File[],
   })
+
+  // Fetch patient data if in edit mode
+  useEffect(() => {
+    if (editPatientId) {
+      fetchPatientData(editPatientId)
+    }
+  }, [editPatientId])
+
+  const fetchPatientData = async (patientId: string) => {
+    setLoading(true)
+    try {
+      const response = await fetch(`/api/patients/edit?id=${patientId}`)
+      if (response.ok) {
+        const data = await response.json()
+        const patient = data.patient
+        
+        setFormData({
+          username,
+          name: patient.name,
+          age: patient.age,
+          gender: patient.gender,
+          phone: patient.phone,
+          healthAssistant: patient.healthAssistant,
+          address: patient.address,
+          medicalAnswers: patient.medicalAnswers,
+          familyAnswers: patient.familyAnswers,
+          featureAnswers: patient.featureAnswers,
+          uploadedImages: [],
+        })
+        
+        setIsEditMode(true)
+        
+        showToast({
+          title: 'Edit Mode',
+          description: `Editing patient: ${patient.name}`,
+          className: 'bg-blue-600 text-white border-blue-700',
+        })
+      } else {
+        showToast({
+          title: 'Error',
+          description: 'Failed to load patient data',
+          variant: 'destructive',
+        })
+        router.push('/dashboard')
+      }
+    } catch (error) {
+      console.error("Failed to fetch patient data:", error)
+      showToast({
+        title: 'Error',
+        description: 'Failed to load patient data',
+        variant: 'destructive',
+      })
+      router.push('/dashboard')
+    } finally {
+      setLoading(false)
+    }
+  }
 
   const handleLogout = useCallback(async () => {
     try {
@@ -95,7 +155,11 @@ export default function HomeFlow({ username }: HomeFlowProps) {
           onBack={() => handleNavigate("family")}
         />
       case "device":
-        return <InputDevicePage onBack={() => handleNavigate("features")} formData={formData} />
+        return <InputDevicePage 
+          onBack={() => handleNavigate("features")} 
+          formData={formData} 
+          editPatientId={editPatientId}
+        />
       default:
         return null
     }

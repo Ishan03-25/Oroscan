@@ -42,6 +42,7 @@ model Patient {
   phone           String
   healthAssistant String?
   address         String
+  createdBy       String?   // Username of user who created this screening
   doctorId        String
   doctor          User      @relation(fields: [doctorId], references: [id])
   createdAt       DateTime  @default(now())

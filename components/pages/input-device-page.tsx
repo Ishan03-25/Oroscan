@@ -16,9 +16,10 @@ import { toast } from "@/hooks/use-toast"
 interface InputDevicePageProps {
   onBack: () => void
   formData: PatientFormData
+  editPatientId?: string
 }
 
-export default function InputDevicePage({ onBack, formData }: InputDevicePageProps) {
+export default function InputDevicePage({ onBack, formData, editPatientId }: InputDevicePageProps) {
   const router = useRouter()
   const [files, setFiles] = useState<File[]>([])
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -46,6 +47,7 @@ export default function InputDevicePage({ onBack, formData }: InputDevicePagePro
 
       // Prepare form data
       const submitData = {
+        ...(editPatientId && { patientId: editPatientId }),
         patientInfo: {
           name: formData.name,
           age: formData.age,
@@ -71,7 +73,7 @@ export default function InputDevicePage({ onBack, formData }: InputDevicePagePro
 
       // Submit to API
       const response = await fetch("/api/submit", {
-        method: "POST",
+        method: editPatientId ? "PUT" : "POST",
         headers: {
           "Content-Type": "application/json",
         },
@@ -86,14 +88,17 @@ export default function InputDevicePage({ onBack, formData }: InputDevicePagePro
 
       // Show success message and redirect
       toast({
-        title: "Submission Successful",
-        description: "Redirecting to analysis results...",
+        title: editPatientId ? "Update Successful" : "Submission Successful",
+        description: editPatientId ? "Screening updated successfully" : "Redirecting to analysis results...",
         className: "bg-emerald-600 text-white",
         duration: 3000,
       })
 
-      // Redirect to results page
+      // Redirect to results page or dashboard
       setIsSubmitted(true)
+      if (editPatientId) {
+        setTimeout(() => router.push("/dashboard"), 1500)
+      }
       // router.push(`/result?id=${result.patientId}`)
     } catch (error) {
       console.error("Error submitting data:", error)

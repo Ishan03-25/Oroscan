@@ -7,8 +7,15 @@ export const metadata: Metadata = {
   description: "Oral Cancer Screening System",
 }
 
-export default async function HomePage() {
+interface HomePageProps {
+  searchParams: Promise<{ edit?: string }>
+}
+
+export default async function HomePage({ searchParams }: HomePageProps) {
   const user = await requireAuth()
-  return <HomeFlow username={user.username} />
+  const params = await searchParams
+  const editPatientId = params.edit
+  
+  return <HomeFlow username={user.username} editPatientId={editPatientId} />
 }
 
