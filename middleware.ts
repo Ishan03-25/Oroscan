@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
-import { auth } from '@/lib/auth'
+import { getToken } from 'next-auth/jwt'
 
 export default async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
@@ -23,18 +23,18 @@ export default async function middleware(request: NextRequest) {
     return NextResponse.next()
   }
 
-  // Get session
-  const session = await auth()
+  // Get token (works in Edge Runtime)
+  const token = await getToken({ req: request, secret: process.env.NEXTAUTH_SECRET })
 
   // Redirect to login if not authenticated
-  if (!session?.user) {
+  if (!token) {
     const url = new URL('/', request.url)
     return NextResponse.redirect(url)
   }
 
   // Check admin routes
   if (pathname.startsWith('/admin')) {
-    if (session.user.role !== 'ADMIN') {
+    if (token.role !== 'ADMIN') {
       const url = new URL('/dashboard', request.url)
       return NextResponse.redirect(url)
     }
