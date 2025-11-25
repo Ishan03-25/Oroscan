@@ -1,4 +1,5 @@
 import prisma from "@/lib/prisma"
+import { requireAuth } from "@/lib/auth"
 
 export const dynamic = "force-dynamic"
 
@@ -7,6 +8,7 @@ type Props = {
 }
 
 export default async function ResultPage({ searchParams }: Props) {
+  await requireAuth()
   const patientId = searchParams?.id
 
   if (!patientId) {
